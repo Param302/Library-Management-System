@@ -8,7 +8,11 @@ def user_routes(app, db, bcrypt):
 
     @app.route('/')
     def index():
-        return "Home page"
+        if current_user.is_authenticated:
+            if current_user.role == "admin":
+                return redirect(url_for('admin_dashboard'))
+            return render_template("index.html", user=current_user)
+        return render_template("index.html")
     
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -29,9 +33,9 @@ def user_routes(app, db, bcrypt):
     def dashboard():
         return "Dashboard page"
     
-    @app.route('/book')
+    @app.route('/book/<int:book_id>')
     @login_required
-    def book():
+    def book(book_id):
         return "Book page"
 
     @app.route('/profile')

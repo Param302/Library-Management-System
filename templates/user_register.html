@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Library Management System</title>
+</head>
+
+<body>
+    <h1>Sign Up</h1>
+    <form action="{{ url_for('register')}}" method="POST">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" required>
+        <br>
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required>
+        <br>
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" required>
+        <br>
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+        <br>
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" name="confirm_password" id="confirm_password" required>
+        <br>
+        <button type="submit">Sign Up</button>
+    </form>
+    <p>Already have an account? Please <a href="{{ url_for('login') }}">Sign In</a> here.</p>
+</body>
+
+</html>
