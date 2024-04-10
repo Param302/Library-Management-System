@@ -9,6 +9,33 @@
 
 <body>
     <h1>Sign Up</h1>
+    {% if incomplete_pass %}
+    <h3 style="color: red;">Invalid Password!</h3>
+    <p>Password must:</p>
+    <ul>
+        <li>Be at least 8 characters long</li>
+        <li>Contain at least one lowercase letter</li>
+        <li>Contain at least one uppercase letter</li>
+        <li>Contain at least one number</li>
+        <li>Contain at least one special character</li>
+    </ul>
+    {% endif %}
+    {% if password_mismatch %}
+    <p style="color: red;">Passwords do not match. Please try again.</p>
+    {% elif user_exists %}
+    <p>User already exists with
+        {% if username %}
+        username: "{{ username }}"
+        {% else %}
+        email: "{{ email }}"
+        {% endif %}.
+    </p>
+    <p>Please <a href="{{ url_for('login')}}">Sign in</a>.</p>
+    {% elif password_mismatch %}
+    <p style="color: red;">Passwords do not match. Please try again.</p>
+    {% elif success %}
+    <p style="color: green;">User registered successfully. Please <a href="{{ url_for('login')}}">Sign in</a>.</p>
+    {% endif %}
     <form action="{{ url_for('register')}}" method="POST">
         <label for="name">Name</label>
         <input type="text" name="name" id="name" required>

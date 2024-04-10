@@ -9,6 +9,11 @@
 
 <body>
     <h1>Sign In</h1>
+    {% if user_not_found %}
+    <p>User not found with username: "{{ username }}". Please <a href="{{ url_for('register') }}">Sign Up</a> first.</p>
+    {% elif invalid_credentials %}
+    <p style="color: red;">Invalid username or password. Please try again.</p>
+    {% endif %}
     <form action="{{ url_for('login') }}" method="POST">
         <input type="text" name="username" placeholder="Username" required>
         <input type="password" name="password" placeholder="Password" required>

@@ -8,8 +8,8 @@
 <body>
     {% if user %}
         <h1>Welcome, {{ user.username }}</h1>
-        <a href="{{ url_for('dashboard') }}">Logout</a>
-        <a href="{{ url_for('profile') }}">Logout</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('profile') }}">Profile</a>
         <a href="{{ url_for('logout') }}">Logout</a>
     {% else %}
         <h1>Welcome, Guest</h1>
