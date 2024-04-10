@@ -1,1 +1,36 @@
+# Virtual Environment
 env/
+
+# Flask
+instance/
+.webassets-cache
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# Compiled files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Dependency directories
+env/
+lib/
+lib64/
+bin/
+include/
+
+# Database
+instance/
+migrations/
+*.db
