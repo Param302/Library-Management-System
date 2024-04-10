@@ -16,6 +16,7 @@ def user_routes(app, db, bcrypt):
         return render_template("index.html")
     
     @app.route('/login', methods=['GET', 'POST'])
+
     def login():
         if request.method == "GET":
             return render_template("login.html")
@@ -25,7 +26,7 @@ def user_routes(app, db, bcrypt):
 
         username = request.form.get('username')
         password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(username=username, role="user").first()
         if not user:
             return render_template("login.html", user_not_found=True, username=username)
         
@@ -36,6 +37,7 @@ def user_routes(app, db, bcrypt):
         return redirect(url_for('dashboard'))
 
     @app.route('/register', methods=['GET', 'POST'])
+    @role_required("user")
     def register():
         if request.method == "GET":
             return render_template("register.html")
@@ -52,11 +54,11 @@ def user_routes(app, db, bcrypt):
         if password != conf_password:
             return render_template("register.html", password_mismatch=True)
 
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(username=username, role="user").first()
         if user:
             return render_template("register.html", user_exists=True, username=username)
         
-        email_exists = User.query.filter_by(email=email).first()
+        email_exists = User.query.filter_by(email=email, role="user").first()
         if email_exists:
             return render_template("register.html", user_exists=True, email=email)
         
@@ -75,6 +77,7 @@ def user_routes(app, db, bcrypt):
 
     @app.route('/dashboard')
     @login_required
+    @role_required("user")
     def dashboard():
         return "Dashboard page"
     
@@ -85,6 +88,7 @@ def user_routes(app, db, bcrypt):
 
     @app.route('/profile')
     @login_required
+    @role_required("user")
     def profile():
         return "Profile page"
     ...
@@ -93,8 +97,22 @@ def user_routes(app, db, bcrypt):
 def librarian_routes(app, db, bcrypt):
 
     @app.route('/admin', methods=['GET', 'POST'])
-    def admin():
-        return "Admin login page"
+    def admin():    # Admin123*
+        if current_user and current_user.is_authenticated and current_user.role != "admin":
+            return redirect(url_for('index'))
+        
+        if request.method == "GET":
+            return render_template("admin_login.html")
+        
+
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user = User.query.filter_by(username=username, role="admin").first()
+        if not user or not bcrypt.check_password_hash(user.password, password):
+            return render_template("admin_login.html", invalid_credentials=True)
+        login_user(user)
+
+        return redirect(url_for('admin_dashboard'))
     
     @app.route('/panel')
     @login_required
