@@ -1,5 +1,5 @@
 from functools import wraps
-from utils import get_user_books, is_valid_password, get_books_data
+from utils import get_user_books, get_users, is_valid_password, get_books_data
 from models import User, Section, Book, Transaction, Feedback
 
 from flask import render_template, request, redirect, url_for
@@ -38,7 +38,7 @@ def user_routes(app, db, bcrypt):
             return render_template("login.html", invalid_credentials=True)
         
         login_user(user)
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('index'))
 
     @app.route('/register', methods=['GET', 'POST'])
     @role_required("user")
@@ -83,21 +83,20 @@ def user_routes(app, db, bcrypt):
     @login_required
     @role_required("user")
     def dashboard():
-        books_data = get_books_data()
-        user_books = get_user_books(current_user.user_id)
-        
-        return "Dashboard page"
+        books = get_user_books(current_user.user_id)
+        return render_template("dashboard.html", user=current_user, books=books)
     
     @app.route('/book/<int:book_id>')
     @login_required
     def book(book_id):
-        return "Book page"
+        return f"Book page of {book_id}"
 
     @app.route('/profile')
     @login_required
     @role_required("user")
     def profile():
-        return "Profile page"
+        user_books = get_user_books(current_user.user_id)
+        return render_template("profile.html", user=current_user, user_books=user_books)
     ...
 
 
@@ -121,11 +120,12 @@ def librarian_routes(app, db, bcrypt):
 
         return redirect(url_for('admin_dashboard'))
     
-    @app.route('/panel')
+    @app.route('/admin/dashboard')
     @login_required
     @role_required("admin")
     def admin_dashboard():
-        return "Admin dashboard page"
+        users = get_users()
+        return render_template("admin_panel.html", admin=current_user, users=users)
     
     @app.route('/sections')
     @login_required

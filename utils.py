@@ -12,12 +12,17 @@ def is_valid_password(password, username):
         and any(c in punctuation for c in password)
     )
 
+def get_users():
+    return User.query.filter_by(role="user").all()
 
-BOOKS = Book.query.all()
-SECTIONS = Section.query.all()
-TRANSACTIONS = Transaction.query.all()
+def get_books():
+    return Book.query.all()
 
+def get_sections():
+    return Section.query.all()
 
+def get_transactions():
+    return Transaction.query.all()
 
 def get_books_by_section(section_id):
     books = Book.query.filter_by(section_id=section_id).all()
@@ -31,29 +36,12 @@ def get_books_data():
                 "section": Section.query.filter_by(section_id=i["section_id"]).first()["name"],
                 "filetype": i["filetype"],
             }
-            for i in BOOKS
+            for i in get_books()
         }
     return books_data
 
 def get_user_transactions(user_id):
-    return [t for t in TRANSACTIONS if t["user_id"] == user_id]
-
-def get_user_books(user_id):
-    trans = get_user_transactions(user_id)
-    books_data = get_books_data()
-    feedbacks = get_user_feedbacks(user_id)
-    books = []
-    for t in trans:
-        book = books_data[t["book_id"]].copy()
-        book["issued_at"] = t["issued_at"]
-        book["tenure"] = t["tenure"]
-        book["status"] = t["status"]
-        if t["status"] == "returned" and feedbacks[t["book_id"]]:
-            book["review"] = feedbacks[t["book_id"]]["review"]
-            book["rating"] = feedbacks[t["book_id"]]["rating"]
-        books.append(book)
-
-    return books
+    return [t for t in get_transactions() if t["user_id"] == user_id]
 
 def get_user_feedbacks(user_id):
     feedbacks = {}
@@ -74,3 +62,19 @@ def get_user_feedbacks(user_id):
     
     return feedbacks
 
+def get_user_books(user_id):
+    trans = get_user_transactions(user_id)
+    books_data = get_books_data()
+    feedbacks = get_user_feedbacks(user_id)
+    books = []
+    for t in trans:
+        book = books_data[t["book_id"]].copy()
+        book["issued_at"] = t["issued_at"]
+        book["tenure"] = t["tenure"]
+        book["status"] = t["status"]
+        if t["status"] == "returned" and feedbacks[t["book_id"]]:
+            book["review"] = feedbacks[t["book_id"]]["review"]
+            book["rating"] = feedbacks[t["book_id"]]["rating"]
+        books.append(book)
+
+    return books

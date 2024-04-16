@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{user.username}}'s Dashboard | Library Management System</title>
+</head>
+<body>
+    <h1>{{user.username}}'s Dashboard</h1>
+    <h2>Books</h2>
+    books: {{books}}
+    <ul>
+        {% for b_id in books %}
+            {% set book = books[b_id] %}
+            <li>
+                <h3>{{book["title"]}}</h3>
+                <p>{{book["author"]}}</p>
+                <p>{{book["section"]}}</p>
+                <p>{{book["issued_at"]}}</p>
+                <p>{{book["status"]}}</p>
+                <button><a href="/book/{{b_id}}"></a>Read book</button>
+            </li>
+        {% endfor %}
+</body>
+</html>
