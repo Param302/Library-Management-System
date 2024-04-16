@@ -1,9 +1,9 @@
 from functools import wraps
-from utils import is_valid_password
+from utils import get_user_books, is_valid_password, get_books_data
 from models import User, Section, Book, Transaction, Feedback
 
 from flask import render_template, request, redirect, url_for
-from flask_login import current_user, login_required, login_user, logout_user, user_logged_in
+from flask_login import current_user, login_required, login_user, logout_user
 
 def user_routes(app, db, bcrypt):
 
@@ -12,11 +12,15 @@ def user_routes(app, db, bcrypt):
         if current_user.is_authenticated:
             if current_user.role == "admin":
                 return redirect(url_for('admin_dashboard'))
-            return render_template("index.html", user=current_user)
-        return render_template("index.html")
-    
-    @app.route('/login', methods=['GET', 'POST'])
+        
+        books_data = get_books_data()
 
+        if current_user.is_authenticated:
+            return render_template("index.html", books=books_data, user=current_user)
+        return render_template("index.html", books=books_data)
+
+
+    @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == "GET":
             return render_template("login.html")
@@ -72,13 +76,16 @@ def user_routes(app, db, bcrypt):
     @login_required
     def logout():
         logout_user()
-        return f"You've been logged out successfully!"
+        return redirect(url_for("index"))
     
 
     @app.route('/dashboard')
     @login_required
     @role_required("user")
     def dashboard():
+        books_data = get_books_data()
+        user_books = get_user_books(current_user.user_id)
+        
         return "Dashboard page"
     
     @app.route('/book/<int:book_id>')

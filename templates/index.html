@@ -16,5 +16,17 @@
         <a href="{{ url_for('login') }}">Sign in</a>
         <a href="{{ url_for('register') }}">Sign Up</a>
     {% endif %}
+    <h2>Books</h2>
+    <ul>
+        {% for book in books %}
+            <li>
+                <h3>{{books[book][0]}}</h3>
+                <p>{{books[book][1]}}</p>
+                <p>{{books[book][2]}}</p>
+                <p>{{books[book][3]}}</p>
+                <button>Read book</button>
+            </li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
