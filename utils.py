@@ -35,19 +35,42 @@ def get_books_data():
         }
     return books_data
 
+def get_user_transactions(user_id):
+    return [t for t in TRANSACTIONS if t["user_id"] == user_id]
 
 def get_user_books(user_id):
-    trans = Transaction.query.filter_by(user_id=user_id).all()
+    trans = get_user_transactions(user_id)
     books_data = get_books_data()
+    feedbacks = get_user_feedbacks(user_id)
     books = []
     for t in trans:
         book = books_data[t["book_id"]].copy()
         book["issued_at"] = t["issued_at"]
         book["tenure"] = t["tenure"]
         book["status"] = t["status"]
+        if t["status"] == "returned" and feedbacks[t["book_id"]]:
+            book["review"] = feedbacks[t["book_id"]]["review"]
+            book["rating"] = feedbacks[t["book_id"]]["rating"]
         books.append(book)
 
     return books
 
 def get_user_feedbacks(user_id):
-    for t in 
+    feedbacks = {}
+    i = 0
+    for t in get_user_transactions(user_id):
+        if t["user_id"] == user_id and t["status"] == "returned":
+            feedback = Feedback.query.filter_by(tid=t["tid"]).first()
+            if feedback:
+                title, author = [(b["title"], b["author"]) for b in BOOKS if b["book_id"] == t["book_id"]][0]
+                feedbacks[t["book_id"]] = {
+                    "title": title,
+                    "author": author,
+                    "review": feedback["review"],
+                    "rating": feedback["rating"],
+                    "issued": t["issued_at"],
+                }
+                i += 1
+    
+    return feedbacks
+
