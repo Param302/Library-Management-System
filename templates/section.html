@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{section.name}} - Section | Library Management System</title>
+</head>
+<body>
+    <h1>{{section.name}}</h1>
+    <p><em>{{section.description}}</em></p>
+    <ul>
+        {% for book in books %}
+            <li>
+                <h3>{{book.title}}</h3>
+                <p>{{book.author}}</p>
+                <p>Filetype: {{book.filetype}}</p>
+                <button>Read book</button>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

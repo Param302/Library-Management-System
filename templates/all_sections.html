@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sections | Library Management System</title>
+</head>
+<body>
+    <h1>Sections</h1>
+    <ul>
+        {% for section in sections %}
+            <li>
+                <h3>{{section.name}}</h3>
+                <p>{{section.description}}</p>
+                <p><a href="/sections/{{section.name}}">See Books</a></p>
+                <p><a href="">+ Add book</a></p>
+                <p><a href="">Delete Section</a></p>
+            </li>
+            {% endfor %}
+        </ul>
+    <p><a href="">Add a section</a></p>
+    <p><a href="">Delete a section</a></p>
+
+</body>
+</html>

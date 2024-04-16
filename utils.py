@@ -50,7 +50,8 @@ def get_user_feedbacks(user_id):
         if t["user_id"] == user_id and t["status"] == "returned":
             feedback = Feedback.query.filter_by(tid=t["tid"]).first()
             if feedback:
-                title, author = [(b["title"], b["author"]) for b in BOOKS if b["book_id"] == t["book_id"]][0]
+                book = Book.query.filter_by(book_id=t["book_id"]).first()
+                title, author = book["title"], book["author"]
                 feedbacks[t["book_id"]] = {
                     "title": title,
                     "author": author,
@@ -78,3 +79,19 @@ def get_user_books(user_id):
         books.append(book)
 
     return books
+
+
+
+
+def get_avg_rating(book_id):
+    trans = [i["tid"] for i in get_transactions() if i["book_id"] == book_id and i["status"] == "returned"]
+    total_rating = 0
+    n = 0
+    for t in trans:
+        feedback = Feedback.query.filter_by(transaction_id=t).first()
+        if feedback:
+            n += 1
+            total_rating += feedback["rating"]
+            return feedback["rating"]
+    
+    return total_rating / n if n else 0
