@@ -202,11 +202,15 @@ def librarian_routes(app, db, bcrypt):
 
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
-                    data["filename"] = filename
-                    req = requests.post(
-                        f"http://localhost:5000/api/book/upload", json=data, headers={'Content-Type': 'application/json'})
-                    file_code = req.status_code
-                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    if os.path.exists(filepath):
+                        file_code = 409      # File already exists
+                    else:
+                        data["filename"] = filename
+                        req = requests.post(
+                            f"http://localhost:5000/api/book/upload", json=data, headers={'Content-Type': 'application/json'})
+                        file_code = req.status_code
+                        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 else:
                     file_code = -1      # Invalid file type
             
