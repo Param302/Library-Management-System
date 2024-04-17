@@ -14,7 +14,21 @@
     <main>
         <h1>@{{user.username}}'s Profile</h1>
         <p>{{user.name}}</p>
-        <p>Books: {{user_books}}</p>
+
+        <h2>Books Read</h2>
+        <ul>
+            {% for book in books %}
+            <li>
+                {% if book["status"] == "returned" %}
+                <h3>{{book["title"]}}</h3>
+                <p>Author: {{book["author"]}}</p>
+                <p>Section: {{book["section"]}}</p>
+                <p>Filetype: {{book["filetype"]}}</p>
+                {% endif %}
+                <button><a href="/book/{{book['book_id']}}">View book</a></button>
+            </li>
+            {% endfor %}
+        </ul>
     </main>
 </body>
 

@@ -151,7 +151,7 @@ def user_routes(app, db, bcrypt):
     def user_profile(username):
         user = User.query.filter_by(username=username).first()
         user_books = get_user_books(user.user_id)
-        return render_template("user_profile.html", user=user, user_books=user_books)
+        return render_template("user_profile.html", user=user, books=user_books)
 
 
 def librarian_routes(app, db, bcrypt):

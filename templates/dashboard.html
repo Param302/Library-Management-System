@@ -34,6 +34,7 @@
                 <h3>{{book["title"]}}</h3>
                 <p>Author: {{book["author"]}}</p>
                 <p>Section: {{book["section"]}}</p>
+                <p>Filetype: {{book["filetype"]}}</p>
                 <p>Issued on: {{book["issued_at"]}}</p>
                 {% if book["status"] in ("issued", "overdue") %}
                 <p>Tenure: {{book["tenure"]}}</p>
