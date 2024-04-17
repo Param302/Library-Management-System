@@ -145,7 +145,7 @@ def user_routes(app, db, bcrypt):
     @role_required("user")
     def profile():
         user_books = get_user_books(current_user.user_id)
-        return render_template("profile.html", user=current_user, user_books=user_books)
+        return render_template("profile.html", user=current_user, books=user_books)
 
     @app.route('/u/@<string:username>')
     def user_profile(username):

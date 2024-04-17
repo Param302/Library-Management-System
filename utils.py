@@ -93,9 +93,11 @@ def get_user_books(user_id):
         book["issued_at"] = t.issued_at
         book["tenure"] = t.tenure
         book["status"] = t.status
-        if t.status == "returned" and feedbacks[t.book_id]:
-            book["review"] = feedbacks[t.book_id]["review"]
-            book["rating"] = feedbacks[t.book_id]["rating"]
+        if t.status == "returned":
+            book["returned_at"] = t.returned_at
+            if feedbacks[t.book_id]:
+                book["review"] = feedbacks[t.book_id]["review"]
+                book["rating"] = feedbacks[t.book_id]["rating"]
         books.append(book)
 
     return books

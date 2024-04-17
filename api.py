@@ -1,26 +1,9 @@
 import os
-from flask import request
-import werkzeug
-import werkzeug.datastructures
 from models import Book, Section
-from utils import get_books_by_section, get_sections, UPLOAD_FOLDER
+from utils import get_books_by_section, UPLOAD_FOLDER
 
 from app import db
 from flask_restful import Resource, reqparse, fields, marshal_with
-
-
-course_parser = reqparse.RequestParser()
-course_parser.add_argument("course_id", type=int, required=True)
-course_parser.add_argument("course_name", type=str, required=True)
-course_parser.add_argument("course_code", type=str, required=True)
-course_parser.add_argument("course_description", type=str)
-
-course_fields = {
-    "course_id": fields.Integer,
-    "course_name": fields.String,
-    "course_code": fields.String,
-    "course_description": fields.String
-}
 
 section_parser = reqparse.RequestParser()
 section_parser.add_argument("name", type=str, required=True)
@@ -32,7 +15,6 @@ books_parser.add_argument("author", type=str, required=True)
 books_parser.add_argument("section_id", type=int, required=True)
 books_parser.add_argument("filename", type=str, required=True)
 books_parser.add_argument("filetype", type=str, required=True)
-# books_parser.add_argument("file", type=werkzeug.datastructures.FileStorage, required=True, location="files")
 
 section_fields = {
     "section_id": fields.Integer,

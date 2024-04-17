@@ -10,6 +10,20 @@
 <body>
     <header>
         <h1>Library Management System</h1>
+        {% if user %}
+        <a href="{{ url_for('index')}}">Home</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('profile') }}">Profile</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+        <h1>Welcome, Guest</h1>
+        <a href="{{ url_for('login') }}">Sign in</a>
+        <a href="{{ url_for('register') }}">Sign Up</a>
+        {% endif %}
+        <form action="/search">
+            <input type="text" name="q" id="query" placeholder="Type any Book or Author" value="{{query}}">
+            <button type="submit">Search</button>
+        </form>
     </header>
     <main>
         <h1>{{user.username}}'s Dashboard</h1>
@@ -18,10 +32,20 @@
             {% for book in books %}
             <li>
                 <h3>{{book["title"]}}</h3>
-                <p>{{book["author"]}}</p>
-                <p>{{book["section"]}}</p>
-                <p>{{book["issued_at"]}}</p>
-                <p>{{book["status"]}}</p>
+                <p>Author: {{book["author"]}}</p>
+                <p>Section: {{book["section"]}}</p>
+                <p>Issued on: {{book["issued_at"]}}</p>
+                {% if book["status"] in ("issued", "overdue") %}
+                <p>Tenure: {{book["tenure"]}}</p>
+                {% elif book["status"] == "returned" %}
+                <p>Returned on {{book["returned_at"]}}</p>
+                <p>Rating: {{book["rating"]}} out of 5</p>
+                {% if book["review"] %}
+                <p>Your review: "<em>{{book["review"]}}</em>"</p>
+                {% endif %}
+                {% else %}
+                <p>Approval Pending for Issuance</p>
+                {% endif %}
                 <button><a href="/book/{{book['book_id']}}">View book</a></button>
             </li>
             {% endfor %}
