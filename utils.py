@@ -31,34 +31,34 @@ def get_books_by_section(section_id):
 
 def get_books_data():
     books_data = {
-            i["book_id"]: {
-                "title": i["title"],
-                "author": i["author"],
-                "section": Section.query.filter_by(section_id=i["section_id"]).first()["name"],
-                "filetype": i["filetype"],
+            i.book_id: {
+                "title": i.title,
+                "author": i.author,
+                "section": Section.query.filter_by(section_id=i.section_id).first().name,
+                "filetype": i.filetype,
             }
             for i in get_books()
         }
     return books_data
 
 def get_user_transactions(user_id):
-    return [t for t in get_transactions() if t["user_id"] == user_id]
+    return [t for t in get_transactions() if t.user_id == user_id]
 
 def get_user_feedbacks(user_id):
     feedbacks = {}
     i = 0
     for t in get_user_transactions(user_id):
-        if t["user_id"] == user_id and t["status"] == "returned":
-            feedback = Feedback.query.filter_by(tid=t["tid"]).first()
+        if t.user_id == user_id and t.status == "returned":
+            feedback = Feedback.query.filter_by(tid=t.tid).first()
             if feedback:
-                book = Book.query.filter_by(book_id=t["book_id"]).first()
-                title, author = book["title"], book["author"]
-                feedbacks[t["book_id"]] = {
+                book = Book.query.filter_by(book_id=t.book_id).first()
+                title, author = book.title, book.author
+                feedbacks[t.book_id] = {
                     "title": title,
                     "author": author,
-                    "review": feedback["review"],
-                    "rating": feedback["rating"],
-                    "issued": t["issued_at"],
+                    "review": feedback.review,
+                    "rating": feedback.rating,
+                    "issued": t.issued_at,
                 }
                 i += 1
     
@@ -70,11 +70,11 @@ def get_user_books(user_id):
     feedbacks = get_user_feedbacks(user_id)
     books = []
     for t in trans:
-        book = books_data[t["book_id"]].copy()
-        book["issued_at"] = t["issued_at"]
-        book["tenure"] = t["tenure"]
-        book["status"] = t["status"]
-        if t["status"] == "returned" and feedbacks[t["book_id"]]:
+        book = books_data[t.book_id].copy()
+        book["issued_at"] = t.issued_at
+        book["tenure"] = t.tenure
+        book["status"] = t.status
+        if t.status == "returned" and feedbacks[t.book_id]:
             book["review"] = feedbacks[t["book_id"]]["review"]
             book["rating"] = feedbacks[t["book_id"]]["rating"]
         books.append(book)
@@ -86,10 +86,10 @@ def get_transactional_details():
     books_data = get_books_data()
     details = []
     for t in trans:
-        book = books_data[t["book_id"]].copy()
-        book["issued_at"] = t["issued_at"]
-        book["tenure"] = t["tenure"]
-        book["status"] = t["status"]
+        book = books_data[t.book_id].copy()
+        book["issued_at"] = t.issued_at
+        book["tenure"] = t.tenure
+        book["status"] = t.status
         details.append(book)
     
     transactions = {"pending": [], "issued": [], "returned": [], "overdue": [], "revoked": []}
@@ -99,7 +99,7 @@ def get_transactional_details():
     return transactions
 
 def get_avg_rating(book_id):
-    trans = [i["tid"] for i in get_transactions() if i["book_id"] == book_id and i["status"] == "returned"]
+    trans = [i.tid for i in get_transactions() if i.book_id == book_id and i.status == "returned"]
     total_rating = 0
     n = 0
     for t in trans:
@@ -107,8 +107,7 @@ def get_avg_rating(book_id):
         if feedback:
             n += 1
             total_rating += feedback["rating"]
-            return feedback["rating"]
-    
+  
     return total_rating / n if n else 0
 
 
