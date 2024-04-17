@@ -62,7 +62,7 @@ class Transaction(db.Model):
     issued_at = db.Column(db.DateTime, default=datetime.now)
     tenure = db.Column(db.Integer, nullable=False)
     returned_at = db.Column(db.DateTime)
-    status = db.Column(db.String(20), default="pending", nullable=False)   # issued, returned, overdue, revoked, pending
+    status = db.Column(db.String(20), default="pending", nullable=False)   # issued, returned, overdue, pending
 
     def __repr__(self):
         return f"<Transaction {self.tid} of Book Id: {self.book_id} made by User Id: {self.user_id}>"

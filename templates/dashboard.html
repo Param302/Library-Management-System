@@ -8,17 +8,15 @@
 <body>
     <h1>{{user.username}}'s Dashboard</h1>
     <h2>Books</h2>
-    books: {{books}}
     <ul>
-        {% for b_id in books %}
-            {% set book = books[b_id] %}
+        {% for book in books %}
             <li>
                 <h3>{{book["title"]}}</h3>
                 <p>{{book["author"]}}</p>
                 <p>{{book["section"]}}</p>
                 <p>{{book["issued_at"]}}</p>
                 <p>{{book["status"]}}</p>
-                <button><a href="/book/{{b_id}}"></a>Read book</button>
+                <button><a href="/book/{{book['book_id']}}">View book</a></button>
             </li>
         {% endfor %}
 </body>

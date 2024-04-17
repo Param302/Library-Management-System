@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import requests
 from functools import wraps
@@ -121,6 +122,7 @@ def user_routes(app, db, bcrypt):
         rating = request.form.get("rating")
         transaction = Transaction.query.filter_by(user_id=current_user.user_id, book_id=book_id).order_by(Transaction.issued_at.desc()).first()
         transaction.status = "returned"
+        transaction.returned_at = datetime.now()
         feedback = Feedback(transaction_id=transaction.tid, review=review, rating=rating)
         db.session.add(feedback)
         db.session.commit()
@@ -229,11 +231,22 @@ def librarian_routes(app, db, bcrypt):
 
         return render_template("section.html", section=section, books=req.json(), file_code=file_code)
 
-    @app.route('/book_status')
+    @app.route('/book_status', methods=['GET', 'POST'])
     @login_required
     @role_required("admin")
     def book_status():
         trans = get_transactional_details()
+        if request.method == "POST":
+            trans_id = request.form.get("trans_id")
+            status = request.form.get("status")
+
+            transaction = Transaction.query.filter_by(tid=trans_id).first()
+            if status == "issued":
+                transaction.issued_at = datetime.now()
+            transaction.status = status
+            db.session.commit()
+
+            return redirect(url_for('book_status'))
         return render_template("book_status.html", admin=current_user, transactions=trans)
 
     @app.route('/users')

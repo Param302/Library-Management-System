@@ -68,7 +68,7 @@ def get_user_feedbacks(user_id):
     i = 0
     for t in get_user_transactions(user_id):
         if t.user_id == user_id and t.status == "returned":
-            feedback = Feedback.query.filter_by(tid=t.tid).first()
+            feedback = Feedback.query.filter_by(transaction_id=t.tid).first()
             if feedback:
                 book = Book.query.filter_by(book_id=t.book_id).first()
                 title, author = book.title, book.author
@@ -94,8 +94,8 @@ def get_user_books(user_id):
         book["tenure"] = t.tenure
         book["status"] = t.status
         if t.status == "returned" and feedbacks[t.book_id]:
-            book["review"] = feedbacks[t["book_id"]]["review"]
-            book["rating"] = feedbacks[t["book_id"]]["rating"]
+            book["review"] = feedbacks[t.book_id]["review"]
+            book["rating"] = feedbacks[t.book_id]["rating"]
         books.append(book)
 
     return books
@@ -105,13 +105,18 @@ def get_transactional_details():
     books_data = get_books_data()
     details = []
     for t in trans:
+        user = User.query.filter_by(user_id=t.user_id).first()
         book = books_data[t.book_id].copy()
+        book["user_id"] = t.user_id
+        book["username"] = user.username
+        book["name"] = user.name
+        book["trans_id"] = t.tid
         book["issued_at"] = t.issued_at
         book["tenure"] = t.tenure
         book["status"] = t.status
         details.append(book)
     
-    transactions = {"pending": [], "issued": [], "returned": [], "overdue": [], "revoked": []}
+    transactions = {"pending": [], "issued": [], "returned": [], "overdue": []}
     for d in details:
         transactions[d["status"]].append(d)
 

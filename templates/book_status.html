@@ -1,19 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Status | Library Management System</title>
 </head>
+
 <body>
     <h1>Book Status</h1>
-    {{transactions}}
     {% for status in transactions %}
-        <h2>{{status}}</h2>
-        {% set trans = transactions[status] %}
+    <h2>{{status}}</h2>
+    {% set trans = transactions[status] %}
+    <ul>
         {% for t in trans %}
-            <p>{{t}}</p>
+        <li>
+            <dl>
+                <dt>User</dt>
+                <dd><a href="/u/@{{t.username}}">{{t.name}}</a></dd>
+                <dt>Book Title</dt>
+                <dd>{{t.title}}</dd>
+                <dt>Section</dt>
+                <dd>{{t.section}}</dd>
+                <dt>Status</dt>
+                <dd>
+                    {% if t.status == "pending" %}
+                    <form action="/book_status" method="POST">
+                        <input type="hidden" name="trans_id" id="trans_id" value="{{t.trans_id}}">
+                        <input type="hidden" name="status" id="status" value="issued">
+                        <button type="submit">Issue</button>
+                    </form>
+                    {% elif t.status == "issued" or t.status == "overdue" %}
+                    <form action="/book_status" method="POST">
+                        <input type="hidden" name="trans_id" id="trans_id" value="{{t.trans_id}}">
+                        <input type="hidden" name="status" id="status" value="return">
+                        <button type="submit">Revoke Access</button>
+                    </form>
+                    {% else %}
+                    Returned! {{t.status}}
+                    {% endif %}
+                </dd>
+            </dl>
+        </li>
         {% endfor %}
+    </ul>
     {% endfor %}
 </body>
+
 </html>
