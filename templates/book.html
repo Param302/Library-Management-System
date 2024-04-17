@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{book.title}} | Library Management System</title>
+</head>
+<body>
+    <h1>{{book.title}}</h1>
+    <p>Author: {{book.author}}</p>
+    <p>Section: {{book.section}}</p>
+    <p>Filetype: {{book.filetype}}</p>
+    {% if not user or not book.status %}
+        <form action="/book/{{book.book_id}}/issue" method="POST">
+            <select name="days" id="days">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7" selected>7</option>
+            </select>
+            <button type="submit">Issue</button>
+        </form>
+    {% elif book.status == "issued" or book.status == "overdue" %}
+        <p>Issued on: {{book.issued_at}}</p>
+        <p>Tenure: {{book.tenure}} days</p>
+        <a href="">Read book</a>
+        <button onclick="toggleFeedbackForm()">Return</button>
+        <form action="/book/{{book.book_id}}/return" method="POST" id="feedback-form" style="display:none;">
+            <textarea name="review" id="review" cols="50" rows="8"></textarea>
+            <select name="rating" id="rating">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5" selected>5</option>
+            </select>
+            <button type="submit">Return</button>
+        </form>
+    {% else %}
+        <p>Status: {{book.status}}</p>
+    {% endif %}
+</body>
+<script>
+    const feedbackForm = document.querySelector("#feedback-form");
+    function toggleFeedbackForm() {
+        feedbackForm.style.display = feedbackForm.style.display === "none" ? "block" : "none";
+        // feedbackForm.action = "/book/{{book.book_id}}/return";
+    }
+
+    // toggleFeedbackForm();
+</script>
+</html>

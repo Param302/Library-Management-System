@@ -1,7 +1,7 @@
 import os
 import requests
 from functools import wraps
-from utils import allowed_file, get_books_by_section, get_transactional_details, get_transactions, is_valid_password, get_sections, get_user_books, get_users, get_books_data
+from utils import allowed_file, get_book_details, get_book_details_for_user, get_books_by_section, get_transactional_details, get_transactions, is_valid_password, get_sections, get_user_books, get_users, get_books_data
 from models import User, Section, Book, Transaction, Feedback
 
 from werkzeug.utils import secure_filename
@@ -13,10 +13,6 @@ def user_routes(app, db, bcrypt):
 
     @app.route('/')
     def index():
-        if current_user.is_authenticated:
-            if current_user.role == "admin":
-                return redirect(url_for('admin_dashboard'))
-
         books_data = get_books_data()
 
         if current_user.is_authenticated:
@@ -25,11 +21,11 @@ def user_routes(app, db, bcrypt):
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
-        if request.method == "GET":
-            return render_template("login.html")
-
         if current_user.is_authenticated:
             return redirect(url_for('index'))
+        
+        if request.method == "GET":
+            return render_template("login.html")
 
         username = request.form.get('username')
         password = request.form.get('password')
@@ -46,6 +42,9 @@ def user_routes(app, db, bcrypt):
     @app.route('/register', methods=['GET', 'POST'])
     @role_required("user")
     def register():
+        if current_user.is_authenticated:
+            return redirect(url_for('index'))
+        
         if request.method == "GET":
             return render_template("register.html")
 
@@ -89,36 +88,43 @@ def user_routes(app, db, bcrypt):
         books = get_user_books(current_user.user_id)
         return render_template("dashboard.html", user=current_user, books=books)
 
-    # @app.route('/<string:book_title>')
     @app.route('/book/<int:book_id>')
     def book(book_id):
-        if current_user.is_authenticated:
-            return f"Book page of {book_id} with {current_user.username}"
-        return f"Book page of {book_id}"
+        book = get_book_details(book_id)
+        if current_user.is_authenticated and current_user.role == "user":
+            book = get_book_details_for_user(current_user.user_id, book_id)
+        return render_template("book.html", book=book, user=current_user)
 
-    # @app.route('/<string:book_title/issue>')
-    @app.route('/book/<int:book_id>/issue')
+    @app.route('/book/<int:book_id>/issue', methods=['GET', 'POST'])
     @login_required
     @role_required("user")
     def issue_book(book_id):
-        return f"Issue book page of {book_id} with {current_user.username}"
+        if request.method=="GET":
+            return redirect(f"/book/{book_id}")
+        days = request.form.get("days")
+        # transaction = Transaction.query.filter_by(user_id=current_user.user_id, book_id=book_id).first()
+        # if transaction:
+        #     return redirect(f"/book/{book_id}")
+        transaction = Transaction(user_id=current_user.user_id, book_id=book_id, tenure=days)
+        db.session.add(transaction)
+        db.session.commit()
+        return redirect(f"/book/{book_id}")
 
-    # @app.route('/<string:book_title/return>')
-    @app.route('/book/<int:book_id>/return')
+    @app.route('/book/<int:book_id>/return', methods=['GET', 'POST'])
     @login_required
     @role_required("user")
     def return_book(book_id):
-        return f"Return book page of {book_id} with {current_user.username}"
-
-    @app.route('/feedback', methods=['POST'])
-    @login_required
-    @role_required("user")
-    def book_feedback():
-        book_id = request.form.get('book_id')
-        review = request.form.get('review')
-        rating = request.form.get('rating')
-        user = current_user.user_id
-        return f"Feedback page of {book_id} with {current_user.username}"
+        if request.method=="GET":
+            return redirect(f"/book/{book_id}")
+        
+        review = request.form.get("review", "")
+        rating = request.form.get("rating")
+        transaction = Transaction.query.filter_by(user_id=current_user.user_id, book_id=book_id).order_by(Transaction.issued_at.desc()).first()
+        transaction.status = "returned"
+        feedback = Feedback(transaction_id=transaction.tid, review=review, rating=rating)
+        db.session.add(feedback)
+        db.session.commit()
+        return redirect(f"/book/{book_id}")
 
     @app.route('/profile')
     @login_required

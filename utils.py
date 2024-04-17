@@ -23,23 +23,42 @@ def get_sections():
     return Section.query.all()
 
 def get_transactions():
-    return Transaction.query.all()
+    return Transaction.query.order_by(Transaction.tid.desc()).all()
 
 def get_books_by_section(section_id):
     books = Book.query.filter_by(section_id=section_id).all()
     return books
 
+def get_book_details(book_id):
+    book = Book.query.filter_by(book_id=book_id).first()
+    return {
+        "book_id": book.book_id,
+        "title": book.title,
+        "author": book.author,
+        "section": Section.query.filter_by(section_id=book.section_id).first().name,
+        "filetype": book.filetype,
+    }
+
 def get_books_data():
     books_data = {
-            i.book_id: {
-                "title": i.title,
-                "author": i.author,
-                "section": Section.query.filter_by(section_id=i.section_id).first().name,
-                "filetype": i.filetype,
-            }
+            i.book_id: get_book_details(i.book_id)
             for i in get_books()
         }
     return books_data
+
+def get_book_details_for_user(user_id, book_id):
+    book_details = get_book_details(book_id)
+    trans = get_user_transactions(user_id)
+
+    details = book_details.copy()
+    for t in trans:
+        if t.book_id == book_id and t.status != "returned":
+            details["issued_at"] = t.issued_at
+            details["tenure"] = t.tenure
+            details["status"] = t.status
+            break
+    return details
+
 
 def get_user_transactions(user_id):
     return [t for t in get_transactions() if t.user_id == user_id]
