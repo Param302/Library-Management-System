@@ -80,8 +80,22 @@ def get_user_books(user_id):
 
     return books
 
+def get_transactional_details():
+    trans = get_transactions()
+    books_data = get_books_data()
+    details = []
+    for t in trans:
+        book = books_data[t["book_id"]].copy()
+        book["issued_at"] = t["issued_at"]
+        book["tenure"] = t["tenure"]
+        book["status"] = t["status"]
+        details.append(book)
+    
+    transactions = {"pending": [], "issued": [], "returned": [], "overdue": [], "revoked": []}
+    for d in details:
+        transactions[d["status"]].append(d)
 
-
+    return transactions
 
 def get_avg_rating(book_id):
     trans = [i["tid"] for i in get_transactions() if i["book_id"] == book_id and i["status"] == "returned"]

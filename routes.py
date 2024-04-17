@@ -1,7 +1,7 @@
 from functools import wraps
 import json
 import requests
-from utils import get_books_by_section, is_valid_password, get_sections, get_user_books, get_users, get_books_data
+from utils import get_books_by_section, get_transactional_details, get_transactions, is_valid_password, get_sections, get_user_books, get_users, get_books_data
 from models import User, Section, Book, Transaction, Feedback
 
 from flask import render_template, request, redirect, url_for, jsonify
@@ -87,28 +87,28 @@ def user_routes(app, db, bcrypt):
     def dashboard():
         books = get_user_books(current_user.user_id)
         return render_template("dashboard.html", user=current_user, books=books)
-    
+
     # @app.route('/<string:book_title>')
     @app.route('/book/<int:book_id>')
     def book(book_id):
         if current_user.is_authenticated:
             return f"Book page of {book_id} with {current_user.username}"
         return f"Book page of {book_id}"
-    
+
     # @app.route('/<string:book_title/issue>')
     @app.route('/book/<int:book_id>/issue')
     @login_required
     @role_required("user")
     def issue_book(book_id):
         return f"Issue book page of {book_id} with {current_user.username}"
-    
+
     # @app.route('/<string:book_title/return>')
     @app.route('/book/<int:book_id>/return')
     @login_required
     @role_required("user")
     def return_book(book_id):
         return f"Return book page of {book_id} with {current_user.username}"
-    
+
     @app.route('/feedback', methods=['POST'])
     @login_required
     @role_required("user")
@@ -164,18 +164,19 @@ def librarian_routes(app, db, bcrypt):
     @role_required("admin")
     def all_sections():
         code = None
-        if request.method=="POST":      
+        if request.method == "POST":
             if request.form.get("name"):    # For Adding a section
-                req = requests.post("http://localhost:5000/api/section", json=request.form.to_dict(), headers={'Content-Type': 'application/json'})
+                req = requests.post("http://localhost:5000/api/section",
+                                    json=request.form.to_dict(), headers={'Content-Type': 'application/json'})
             else:                           # For Deleting a section
-                req = requests.delete(f"http://localhost:5000/api/section/{request.form.get('section_id')}", json=request.form.to_dict(), headers={'Content-Type': 'application/json'})
+                req = requests.delete(f"http://localhost:5000/api/section/{request.form.get('section_id')}", json=request.form.to_dict(
+                ), headers={'Content-Type': 'application/json'})
 
             code = req.status_code
         sections = get_sections()
         return render_template("all_sections.html", sections=sections, code=code)
 
     # !PENDING: Adding Books in section and CRUD API of section and books
-
 
     @app.route('/s/<int:section_id>')
     @login_required
@@ -194,13 +195,14 @@ def librarian_routes(app, db, bcrypt):
     @login_required
     @role_required("admin")
     def book_status():
-        return "Books Status page"
+        trans = get_transactional_details()
+        return render_template("book_status.html", admin=current_user, transactions=trans)
 
     @app.route('/users')
     @login_required
     @role_required("admin")
     def all_users():
-        users = get_users()       
+        users = get_users()
         return render_template("all_users.html", admin=current_user, users=users)
 
 
