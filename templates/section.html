@@ -5,46 +5,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{section.name}} Section | Library Management System</title>
-    <!-- <meta http-equiv="refresh" content="30"> -->
 </head>
 
 <body>
-    <h1>{{section.name}}</h1>
-    <p><em>{{section.description}}</em></p>
-    <ul>
-        {% for book in books %}
-        <li>
-            <h3>{{book.title}}</h3>
-            <p>{{book.author}}</p>
-            <p>Filetype: {{book.filetype}}</p>
-            <button>Read book</button>
-            <form action="/s/{{section.section_id}}" method="POST">
-                <input type="hidden" name="book_id" value="{{book.book_id}}">
-                <button>Delete Book</button>
-            </form>
-        </li>
-        {% endfor %}
-    </ul>
-    <h2>File Upload</h2>
-    {{file_code}}
-    <form action="/s/{{section.section_id}}" id="addbook" method="POST" enctype="multipart/form-data">
-        <label for="title">Title</label>
-        <input type="text" name="title" id="title" required>
-        <label for="author">Author</label>
-        <input type="text" name="author" id="author" required>
-        <input type="file" name="file" id="file" accept="application/pdf, 	application/epub+zip" required onchange="setTitle()">
-        <button type="submit">Add Book</button>
-    </form>
+    <header>
+        <h1>Library Management System</h1>
+    </header>
+    <main>
+        <h1>{{section.name}}</h1>
+        <p><em>{{section.description}}</em></p>
+        <ul>
+            {% for book in books %}
+            <li>
+                <h3>{{book.title}}</h3>
+                <p>{{book.author}}</p>
+                <p>Filetype: {{book.filetype}}</p>
+                <button>Read book</button>
+                <form action="/s/{{section.section_id}}" method="POST">
+                    <input type="hidden" name="book_id" value="{{book.book_id}}">
+                    <button>Delete Book</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        <h2>File Upload</h2>
+        {{file_code}}
+        <form action="/s/{{section.section_id}}" id="addbook" method="POST" enctype="multipart/form-data">
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title" required>
+            <label for="author">Author</label>
+            <input type="text" name="author" id="author" required>
+            <input type="file" name="file" id="file" accept="application/pdf, 	application/epub+zip" required
+                onchange="setTitle()">
+            <button type="submit">Add Book</button>
+        </form>
+    </main>
 </body>
-    <script>
-        function setTitle() {
-            const fileInput = document.getElementById('file');
-            const titleInput = document.getElementById('title');
+<script>
+    function setTitle() {
+        const fileInput = document.getElementById('file');
+        const titleInput = document.getElementById('title');
 
-            if (fileInput.files.length == 1) {
-                const filename = fileInput.files[0].name.split('.')[0];
-                titleInput.value = filename;
-            }
+        if (fileInput.files.length == 1) {
+            const filename = fileInput.files[0].name.split('.')[0];
+            titleInput.value = filename;
         }
-    </script>
+    }
+</script>
+
 </html>

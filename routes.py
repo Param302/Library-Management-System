@@ -19,6 +19,22 @@ def user_routes(app, db, bcrypt):
         if current_user.is_authenticated:
             return render_template("index.html", books=books_data, user=current_user)
         return render_template("index.html", books=books_data)
+    
+    @app.route('/search')
+    def search():
+        query = request.args.get("q")
+        if not query:
+            return redirect(url_for('index'))
+        query = query.lower()
+        books_data = get_books_data()
+        result = {}
+        for k, v in books_data.items():
+            if query in v["title"].lower() or query in v["author"].lower():
+                result[k] = (v)
+        if current_user.is_authenticated:
+            return render_template("search.html", result=result, query=query, user=current_user)
+        
+        return render_template("search.html", result=result, query=query)
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -41,7 +57,6 @@ def user_routes(app, db, bcrypt):
         return redirect(url_for('index'))
 
     @app.route('/register', methods=['GET', 'POST'])
-    @role_required("user")
     def register():
         if current_user.is_authenticated:
             return redirect(url_for('index'))
@@ -103,9 +118,6 @@ def user_routes(app, db, bcrypt):
         if request.method=="GET":
             return redirect(f"/book/{book_id}")
         days = request.form.get("days")
-        # transaction = Transaction.query.filter_by(user_id=current_user.user_id, book_id=book_id).first()
-        # if transaction:
-        #     return redirect(f"/book/{book_id}")
         transaction = Transaction(user_id=current_user.user_id, book_id=book_id, tenure=days)
         db.session.add(transaction)
         db.session.commit()

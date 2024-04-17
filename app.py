@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, redirect, url_for
 from flask_restful import Api
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
@@ -33,7 +33,7 @@ def create_app():
     
     @login_manager.unauthorized_handler
     def unauthorized():
-        return "You must be logged in to access this page", 403
+        return redirect(url_for("login"))
     
 
     user_routes(app, db, bcrypt)

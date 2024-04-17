@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{user.username}}'s Dashboard | Library Management System</title>
 </head>
+
 <body>
-    <h1>{{user.username}}'s Dashboard</h1>
-    <h2>Books</h2>
-    <ul>
-        {% for book in books %}
+    <header>
+        <h1>Library Management System</h1>
+    </header>
+    <main>
+        <h1>{{user.username}}'s Dashboard</h1>
+        <h2>Books</h2>
+        <ul>
+            {% for book in books %}
             <li>
                 <h3>{{book["title"]}}</h3>
                 <p>{{book["author"]}}</p>
@@ -18,6 +24,9 @@
                 <p>{{book["status"]}}</p>
                 <button><a href="/book/{{book['book_id']}}">View book</a></button>
             </li>
-        {% endfor %}
+            {% endfor %}
+        </ul>
+    </main>
 </body>
+
 </html>

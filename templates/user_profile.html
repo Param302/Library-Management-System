@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@{{user.username}} | Library Management System</title>
 </head>
+
 <body>
-    <h1>@{{user.username}}'s Profile</h1>
-    <p>{{user.name}}</p>
-    <!-- <p>{{user.email}}</p> -->
-    <p>Books: {{user_books}}</p>
+    <header>
+        <h1>Library Management System</h1>
+    </header>
+    <main>
+        <h1>@{{user.username}}'s Profile</h1>
+        <p>{{user.name}}</p>
+        <p>Books: {{user_books}}</p>
+    </main>
 </body>
+
 </html>

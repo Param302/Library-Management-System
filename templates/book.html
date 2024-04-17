@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{book.title}} | Library Management System</title>
 </head>
+
 <body>
-    <h1>{{book.title}}</h1>
-    <p>Author: {{book.author}}</p>
-    <p>Section: {{book.section}}</p>
-    <p>Filetype: {{book.filetype}}</p>
-    {% if not user or not book.status %}
+    <header>
+        <h1>Library Management System</h1>
+    </header>
+    <main>
+        <h1>{{book.title}}</h1>
+        <p>Author: {{book.author}}</p>
+        <p>Section: {{book.section}}</p>
+        <p>Filetype: {{book.filetype}}</p>
+        {% if not user or not book.status %}
         <form action="/book/{{book.book_id}}/issue" method="POST">
             <select name="days" id="days">
                 <option value="1">1</option>
@@ -23,7 +29,7 @@
             </select>
             <button type="submit">Issue</button>
         </form>
-    {% elif book.status == "issued" or book.status == "overdue" %}
+        {% elif book.status == "issued" or book.status == "overdue" %}
         <p>Issued on: {{book.issued_at}}</p>
         <p>Tenure: {{book.tenure}} days</p>
         <a href="">Read book</a>
@@ -39,9 +45,10 @@
             </select>
             <button type="submit">Return</button>
         </form>
-    {% else %}
+        {% else %}
         <p>Status: {{book.status}}</p>
-    {% endif %}
+        {% endif %}
+    </main>
 </body>
 <script>
     const feedbackForm = document.querySelector("#feedback-form");
@@ -52,4 +59,5 @@
 
     // toggleFeedbackForm();
 </script>
+
 </html>

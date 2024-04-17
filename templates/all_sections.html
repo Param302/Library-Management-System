@@ -8,31 +8,41 @@
 </head>
 
 <body>
-    <h1>Sections</h1>
-    <ul>
-        {% for section in sections %}
-        <li>
-            <h3>{{section.name}}</h3>
-            <p>{{section.description}}</p>
-            <p><a href="/s/{{section.section_id}}">See Books</a></p>
-            <p><a href="/s/{{section.section_id}}#addbook">+ Add book</a></p>
-            <form action="/sections" method="POST">
-                <input type="hidden" name="section_id" value="{{section.section_id}}">
-                <button>Delete Section</button>
-            </form>
-        </li>
-        {% endfor %}
-    </ul>
-    {% if code %}
-    <h3>Code: {{ code }}</h3>
-    {% endif %}
-    <form action="/sections" method="POST">
-        <label for="name">Name</label>
-        <input type="text" name="name" id="name">
-        <label for="description">Description</label>
-        <textarea name="description" id="description" cols="50" rows="8"></textarea>
-        <button type="submit">Add Section</button>
-    </form>
+    <header>
+        <h1>Library Management System</h1>
+        <a href="{{ url_for('admin_dashboard') }}">Admin Panel</a>
+        <a href="{{ url_for('book_status')}}">Books Status</a>
+        <a href="{{ url_for('all_sections')}}">Sections</a>
+        <a href="{{ url_for('all_users')}}">Users</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </header>
+    <main>
+        <h1>Sections</h1>
+        <ul>
+            {% for section in sections %}
+            <li>
+                <h3>{{section.name}}</h3>
+                <p>{{section.description}}</p>
+                <p><a href="/s/{{section.section_id}}">See Books</a></p>
+                <p><a href="/s/{{section.section_id}}#addbook">+ Add book</a></p>
+                <form action="/sections" method="POST">
+                    <input type="hidden" name="section_id" value="{{section.section_id}}">
+                    <button>Delete Section</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        {% if code %}
+        <h3>Code: {{ code }}</h3>
+        {% endif %}
+        <form action="/sections" method="POST">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name">
+            <label for="description">Description</label>
+            <textarea name="description" id="description" cols="50" rows="8"></textarea>
+            <button type="submit">Add Section</button>
+        </form>
+    </main>
 </body>
 
 </html>

@@ -8,53 +8,58 @@
 </head>
 
 <body>
-    <h1>Sign Up</h1>
-    {% if incomplete_pass %}
-    <h3 style="color: red;">Invalid Password!</h3>
-    <p>Password must:</p>
-    <ul>
-        <li>Be at least 8 characters long</li>
-        <li>Contain at least one lowercase letter</li>
-        <li>Contain at least one uppercase letter</li>
-        <li>Contain at least one number</li>
-        <li>Contain at least one special character</li>
-    </ul>
-    {% endif %}
-    {% if password_mismatch %}
-    <p style="color: red;">Passwords do not match. Please try again.</p>
-    {% elif user_exists %}
-    <p>User already exists with
-        {% if username %}
-        username: "{{ username }}"
-        {% else %}
-        email: "{{ email }}"
-        {% endif %}.
-    </p>
-    <p>Please <a href="{{ url_for('login')}}">Sign in</a>.</p>
-    {% elif password_mismatch %}
-    <p style="color: red;">Passwords do not match. Please try again.</p>
-    {% elif success %}
-    <p style="color: green;">User registered successfully. Please <a href="{{ url_for('login')}}">Sign in</a>.</p>
-    {% endif %}
-    <form action="{{ url_for('register')}}" method="POST">
-        <label for="name">Name</label>
-        <input type="text" name="name" id="name" required>
-        <br>
-        <label for="email">Email</label>
-        <input type="email" name="email" id="email" required>
-        <br>
-        <label for="username">Username</label>
-        <input type="text" name="username" id="username" required>
-        <br>
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password" required>
-        <br>
-        <label for="confirm_password">Confirm Password</label>
-        <input type="password" name="confirm_password" id="confirm_password" required>
-        <br>
-        <button type="submit">Sign Up</button>
-    </form>
-    <p>Already have an account? Please <a href="{{ url_for('login') }}">Sign In</a> here.</p>
+    <header>
+        <h1>Library Management System</h1>
+    </header>
+    <main>
+        <h1>Sign Up</h1>
+        {% if incomplete_pass %}
+        <h3 style="color: red;">Invalid Password!</h3>
+        <p>Password must:</p>
+        <ul>
+            <li>Be at least 8 characters long</li>
+            <li>Contain at least one lowercase letter</li>
+            <li>Contain at least one uppercase letter</li>
+            <li>Contain at least one number</li>
+            <li>Contain at least one special character</li>
+        </ul>
+        {% endif %}
+        {% if password_mismatch %}
+        <p style="color: red;">Passwords do not match. Please try again.</p>
+        {% elif user_exists %}
+        <p>User already exists with
+            {% if username %}
+            username: "{{ username }}"
+            {% else %}
+            email: "{{ email }}"
+            {% endif %}.
+        </p>
+        <p>Please <a href="{{ url_for('login')}}">Sign in</a>.</p>
+        {% elif password_mismatch %}
+        <p style="color: red;">Passwords do not match. Please try again.</p>
+        {% elif success %}
+        <p style="color: green;">User registered successfully. Please <a href="{{ url_for('login')}}">Sign in</a>.</p>
+        {% endif %}
+        <form action="{{ url_for('register')}}" method="POST">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" required>
+            <br>
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" required>
+            <br>
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" required>
+            <br>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+            <br>
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" name="confirm_password" id="confirm_password" required>
+            <br>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? Please <a href="{{ url_for('login') }}">Sign In</a> here.</p>
+    </main>
 </body>
 
 </html>

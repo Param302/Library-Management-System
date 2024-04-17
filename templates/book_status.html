@@ -8,43 +8,53 @@
 </head>
 
 <body>
-    <h1>Book Status</h1>
-    {% for status in transactions %}
-    <h2>{{status}}</h2>
-    {% set trans = transactions[status] %}
-    <ul>
-        {% for t in trans %}
-        <li>
-            <dl>
-                <dt>User</dt>
-                <dd><a href="/u/@{{t.username}}">{{t.name}}</a></dd>
-                <dt>Book Title</dt>
-                <dd>{{t.title}}</dd>
-                <dt>Section</dt>
-                <dd>{{t.section}}</dd>
-                <dt>Status</dt>
-                <dd>
-                    {% if t.status == "pending" %}
-                    <form action="/book_status" method="POST">
-                        <input type="hidden" name="trans_id" id="trans_id" value="{{t.trans_id}}">
-                        <input type="hidden" name="status" id="status" value="issued">
-                        <button type="submit">Issue</button>
-                    </form>
-                    {% elif t.status == "issued" or t.status == "overdue" %}
-                    <form action="/book_status" method="POST">
-                        <input type="hidden" name="trans_id" id="trans_id" value="{{t.trans_id}}">
-                        <input type="hidden" name="status" id="status" value="return">
-                        <button type="submit">Revoke Access</button>
-                    </form>
-                    {% else %}
-                    Returned! {{t.status}}
-                    {% endif %}
-                </dd>
-            </dl>
-        </li>
+    <header>
+        <h1>Library Management System</h1>
+        <a href="{{ url_for('admin_dashboard') }}">Admin Panel</a>
+        <a href="{{ url_for('book_status')}}">Books Status</a>
+        <a href="{{ url_for('all_sections')}}">Sections</a>
+        <a href="{{ url_for('all_users')}}">Users</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </header>
+    <main>
+        <h1>Book Status</h1>
+        {% for status in transactions %}
+        <h2>{{status}}</h2>
+        {% set trans = transactions[status] %}
+        <ul>
+            {% for t in trans %}
+            <li>
+                <dl>
+                    <dt>User</dt>
+                    <dd><a href="/u/@{{t.username}}">{{t.name}}</a></dd>
+                    <dt>Book Title</dt>
+                    <dd>{{t.title}}</dd>
+                    <dt>Section</dt>
+                    <dd>{{t.section}}</dd>
+                    <dt>Status</dt>
+                    <dd>
+                        {% if t.status == "pending" %}
+                        <form action="/book_status" method="POST">
+                            <input type="hidden" name="trans_id" id="trans_id" value="{{t.trans_id}}">
+                            <input type="hidden" name="status" id="status" value="issued">
+                            <button type="submit">Issue</button>
+                        </form>
+                        {% elif t.status == "issued" or t.status == "overdue" %}
+                        <form action="/book_status" method="POST">
+                            <input type="hidden" name="trans_id" id="trans_id" value="{{t.trans_id}}">
+                            <input type="hidden" name="status" id="status" value="return">
+                            <button type="submit">Revoke Access</button>
+                        </form>
+                        {% else %}
+                        Returned! {{t.status}}
+                        {% endif %}
+                    </dd>
+                </dl>
+            </li>
+            {% endfor %}
+        </ul>
         {% endfor %}
-    </ul>
-    {% endfor %}
+    </main>
 </body>
 
 </html>

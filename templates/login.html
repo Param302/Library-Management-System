@@ -8,18 +8,24 @@
 </head>
 
 <body>
-    <h1>Sign In</h1>
-    {% if user_not_found %}
-    <p>User not found with username: "{{ username }}". Please <a href="{{ url_for('register') }}">Sign Up</a> first.</p>
-    {% elif invalid_credentials %}
-    <p style="color: red;">Invalid username or password. Please try again.</p>
-    {% endif %}
-    <form action="{{ url_for('login') }}" method="POST">
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Sign In</button>
-    </form>
-    <p>New User? Please <a href="{{ url_for('register') }}">Sign Up</a> yourself first.</p>
+    <header>
+        <h1>Library Management System</h1>
+    </header>
+    <main>
+        <h1>Sign In</h1>
+        {% if user_not_found %}
+        <p>User not found with username: "{{ username }}". Please <a href="{{ url_for('register') }}">Sign Up</a> first.
+        </p>
+        {% elif invalid_credentials %}
+        <p style="color: red;">Invalid username or password. Please try again.</p>
+        {% endif %}
+        <form action="{{ url_for('login') }}" method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Sign In</button>
+        </form>
+        <p>New User? Please <a href="{{ url_for('register') }}">Sign Up</a> yourself first.</p>
+    </main>
 </body>
 
 </html>
