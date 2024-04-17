@@ -1,5 +1,6 @@
 import re
 from string import punctuation
+from app import ALLOWED_EXTENSIONS, UPLOAD_FOLDER
 from models import User, Section, Book, Transaction, Feedback
 
 def is_valid_password(password, username):
@@ -109,3 +110,7 @@ def get_avg_rating(book_id):
             return feedback["rating"]
     
     return total_rating / n if n else 0
+
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS

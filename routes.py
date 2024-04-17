@@ -1,9 +1,10 @@
-from functools import wraps
-import json
+import os
 import requests
-from utils import get_books_by_section, get_transactional_details, get_transactions, is_valid_password, get_sections, get_user_books, get_users, get_books_data
+from functools import wraps
+from utils import allowed_file, get_books_by_section, get_transactional_details, get_transactions, is_valid_password, get_sections, get_user_books, get_users, get_books_data
 from models import User, Section, Book, Transaction, Feedback
 
+from werkzeug.utils import secure_filename
 from flask import render_template, request, redirect, url_for, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
 
@@ -137,7 +138,9 @@ def librarian_routes(app, db, bcrypt):
 
     @app.route('/admin', methods=['GET', 'POST'])
     def admin():    # Admin123*
-        if current_user and current_user.is_authenticated and current_user.role != "admin":
+        if current_user and current_user.is_authenticated:
+            if current_user.role == "admin":
+                return redirect(url_for('admin_dashboard'))
             return redirect(url_for('index'))
 
         if request.method == "GET":
@@ -178,18 +181,43 @@ def librarian_routes(app, db, bcrypt):
 
     # !PENDING: Adding Books in section and CRUD API of section and books
 
-    @app.route('/s/<int:section_id>')
+    @app.route('/s/<int:section_id>', methods=['GET', 'POST'])
     @login_required
     @role_required("admin")
     def section(section_id):
+        file_code = None
         section = Section.query.get(section_id)
         if not section:
             return redirect(url_for('all_sections'))
+        if request.method == "POST":
+            if request.form.get("title"):   # For Adding a book
+                file = request.files["file"]
+                filename, filetype = file.filename.split(".")
+                data = {
+                    "title": request.form.get("title"),
+                    "author": request.form.get("author"),
+                    "section_id": section_id,
+                    "filetype": filetype
+                }
+
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    data["filename"] = filename
+                    req = requests.post(
+                        f"http://localhost:5000/api/book/upload", json=data, headers={'Content-Type': 'application/json'})
+                    file_code = req.status_code
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                else:
+                    file_code = -1      # Invalid file type
+            
+            else:       # Deleting a book
+                req = requests.delete(f"http://localhost:5000/api/book/{request.form.get('book_id')}", json=request.form.to_dict(
+                ), headers={'Content-Type': 'application/json'})
+                file_code = req.status_code
+
         req = requests.get(f"http://localhost:5000/api/section/{section_id}")
-        print(req.status_code)
-        print(req.json(), type(req.json()))
-        # return render_template("section.html", section=section, )
-        return render_template("section.html", section=section, books=req.json())
+
+        return render_template("section.html", section=section, books=req.json(), file_code=file_code)
 
     @app.route('/book_status')
     @login_required
