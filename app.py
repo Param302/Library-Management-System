@@ -6,7 +6,7 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
-api = Api()
+# api = Api()
 
 def create_app():
     app = Flask(__name__, template_folder='templates')
@@ -14,13 +14,13 @@ def create_app():
     app.secret_key = "Some key"
 
     db.init_app(app)
-    api.init_app(app)
+    api = Api(app)
     bcrypt = Bcrypt(app)
     migrate = Migrate(app, db)
     login_manager = LoginManager(app)
 
     from models import User
-    from api import Section
+    from api import SectionAPI
     from routes import user_routes, librarian_routes
 
     @login_manager.user_loader
@@ -35,6 +35,6 @@ def create_app():
     user_routes(app, db, bcrypt)
     librarian_routes(app, db, bcrypt)
 
-    api.add_resource(Section, '/api/section')
+    api.add_resource(SectionAPI, '/api/section', '/api/section/<int:section_id>')
 
     return app

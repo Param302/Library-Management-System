@@ -1,8 +1,10 @@
 from functools import wraps
+import json
+import requests
 from utils import get_books_by_section, is_valid_password, get_sections, get_user_books, get_users, get_books_data
 from models import User, Section, Book, Transaction, Feedback
 
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
 
 
@@ -157,22 +159,36 @@ def librarian_routes(app, db, bcrypt):
         users = get_users()
         return render_template("admin_dash.html", admin=current_user, users=users)
 
-    @app.route('/sections')
+    @app.route('/sections', methods=['GET', 'POST'])
     @login_required
     @role_required("admin")
     def all_sections():
-        sections = get_sections()
-        return render_template("all_sections.html", sections=sections)
+        code = None
+        if request.method=="POST":      
+            if request.form.get("name"):    # For Adding a section
+                req = requests.post("http://localhost:5000/api/section", json=request.form.to_dict(), headers={'Content-Type': 'application/json'})
+            else:                           # For Deleting a section
+                req = requests.delete(f"http://localhost:5000/api/section/{request.form.get('section_id')}", json=request.form.to_dict(), headers={'Content-Type': 'application/json'})
 
-    @app.route('/section/<string:section>')
-    @login_required
-    @role_required("admin")
-    def section(section):
-        section = Section.query.filter_by(name=section).first()
-        sec_books = get_books_by_section(section.section_id)
-        return render_template("section.html", section=section, books=sec_books)
+            code = req.status_code
+        sections = get_sections()
+        return render_template("all_sections.html", sections=sections, code=code)
 
     # !PENDING: Adding Books in section and CRUD API of section and books
+
+
+    @app.route('/s/<int:section_id>')
+    @login_required
+    @role_required("admin")
+    def section(section_id):
+        section = Section.query.get(section_id)
+        if not section:
+            return redirect(url_for('all_sections'))
+        req = requests.get(f"http://localhost:5000/api/section/{section_id}")
+        print(req.status_code)
+        print(req.json(), type(req.json()))
+        # return render_template("section.html", section=section, )
+        return render_template("section.html", section=section, books=req.json())
 
     @app.route('/book_status')
     @login_required
