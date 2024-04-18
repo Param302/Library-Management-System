@@ -2,7 +2,7 @@ from datetime import datetime
 import os
 import requests
 from functools import wraps
-from utils import allowed_file, get_book_details, get_book_details_for_user, get_books_by_section, get_transactional_details, get_transactions, is_valid_password, get_sections, get_user_books, get_users, get_books_data
+from utils import allowed_file, get_book_details, get_book_details_for_user, get_transactional_details, is_valid_password, get_sections, get_user_books, get_users, get_books_data
 from models import User, Section, Book, Transaction, Feedback
 
 from werkzeug.utils import secure_filename
@@ -27,10 +27,12 @@ def user_routes(app, db, bcrypt):
             return redirect(url_for('index'))
         query = query.lower()
         books_data = get_books_data()
-        result = {}
-        for k, v in books_data.items():
+        secitons = get_sections()
+        result = { sec.name: [] for sec in secitons}
+        for v in books_data.items():
+            #!PENDING: search by section name and display data in search results based on section headings...
             if query in v["title"].lower() or query in v["author"].lower():
-                result[k] = (v)
+                result[v["section"]].append(v)
         if current_user.is_authenticated:
             return render_template("search.html", result=result, query=query, user=current_user)
         
