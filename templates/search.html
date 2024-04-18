@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{query}} | Library Management System</title>
+    <title>{{query}} - Search Results | Library Management System</title>
 </head>
 
 <body>
@@ -37,16 +37,17 @@
         <p>No results found for "{{query}}"</p>
         {% else %}
         <h2>Search Results:</h2>
-        <h3>Books:</h3>
         <ul>
-            {% for book_id in result %}
-            {% set book = result[book_id] %}
+            {% for section in result %}
+            {% set books = result[section] %}
             <li>
-                <h3>{{book["title"]}}</h3>
-                <p>Author: {{book["author"]}}</p>
-                <p>Section: {{book["section"]}}</p>
-                <p>Filetype: {{book["filetype"]}}</p>
-                <button><a href="/book/{{book_id}}">View Book</a></button>
+                <h3>{{section}}</h3>
+                {% for book in books %}
+                <h4>{{book.title}}</h4>
+                <p>Author: {{book.author}}</p>
+                <p>Filetype: {{book.filetype}}</p>
+                <button><a href="/book/{{book.book_id}}">View Book</a></button>
+                {% endfor %}
             </li>
             {% endfor %}
         </ul>

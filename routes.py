@@ -27,12 +27,20 @@ def user_routes(app, db, bcrypt):
             return redirect(url_for('index'))
         query = query.lower()
         books_data = get_books_data()
-        secitons = get_sections()
-        result = { sec.name: [] for sec in secitons}
-        for v in books_data.items():
-            #!PENDING: search by section name and display data in search results based on section headings...
+        sections = get_sections()
+        result = {}
+        for s in sections:
+            result[s.name] = []
+            if query in s.name.lower():
+                result[s.name] = [v for v in books_data.values() if v["section"] == s.name]
+        
+        for v in books_data.values():
             if query in v["title"].lower() or query in v["author"].lower():
-                result[v["section"]].append(v)
+                if v not in result[v["section"]]:
+                    result[v["section"]].append(v)
+        
+        result = dict(sorted(result.items(), key=lambda x: len(x[1]), reverse=True))
+
         if current_user.is_authenticated:
             return render_template("search.html", result=result, query=query, user=current_user)
         
