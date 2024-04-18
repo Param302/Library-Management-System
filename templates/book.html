@@ -16,7 +16,11 @@
         <p>Author: {{book.author}}</p>
         <p>Section: {{book.section}}</p>
         <p>Filetype: {{book.filetype}}</p>
-        {% if not user or not book.status %}
+        {% if not book.status %}
+        <button onclick="showNotLoginText()">Read</button>
+        <button onclick="showNotLoginText()">Buy</button>
+        <p id="not-login-text" style="display:none;">Please <a href="{{url_for('login')}}">login</a> to read or buy this book.</p>
+        {% elif not book.status %}
         <form action="/book/{{book.book_id}}/issue" method="POST">
             <select name="days" id="days">
                 <option value="1">1</option>
@@ -54,10 +58,11 @@
     const feedbackForm = document.querySelector("#feedback-form");
     function toggleFeedbackForm() {
         feedbackForm.style.display = feedbackForm.style.display === "none" ? "block" : "none";
-        // feedbackForm.action = "/book/{{book.book_id}}/return";
     }
-
-    // toggleFeedbackForm();
+    const notLoginText = document.querySelector("#not-login-text");
+    function showNotLoginText() {
+        notLoginText.style.display = "block";
+    }
 </script>
 
 </html>
