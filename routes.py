@@ -41,6 +41,10 @@ def user_routes(app, db, bcrypt):
         
         result = dict(sorted(result.items(), key=lambda x: len(x[1]), reverse=True))
 
+        for i in result:
+            if len(result[i]) == 0:
+                del result[i]
+
         if current_user.is_authenticated:
             return render_template("search.html", result=result, query=query, user=current_user)
         
