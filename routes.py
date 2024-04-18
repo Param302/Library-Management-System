@@ -41,8 +41,8 @@ def user_routes(app, db, bcrypt):
         
         result = dict(sorted(result.items(), key=lambda x: len(x[1]), reverse=True))
 
-        for i in result:
-            if len(result[i]) == 0:
+        for i in tuple(result.keys()):
+            if not result[i]:
                 del result[i]
 
         if current_user.is_authenticated:
