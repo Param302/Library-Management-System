@@ -1,0 +1,12 @@
+<form action="/book/{{book.book_id}}/review" method="POST" id="feedback-form" style="display:none;">
+    <h4>Feedback Form</h4>
+    <textarea name="review" id="review" cols="50" rows="8"></textarea>
+    <select name="rating" id="rating">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5" selected>5</option>
+    </select>
+    <button type="submit">Submit</button>
+</form>

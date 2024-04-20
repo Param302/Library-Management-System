@@ -1,14 +1,15 @@
-from datetime import datetime
 import os
 import requests
 from functools import wraps
-from utils import allowed_file, get_book_details, get_book_details_for_user, get_transactional_details, is_valid_password, get_sections, get_user_books, get_users, get_books_data
+from datetime import datetime
+from utils import allowed_file, finish_transaction, get_book_details, get_book_details_for_user, get_transactional_details, is_valid_password, get_sections, get_user_books, get_users, get_books_data, take_review
 from models import User, Section, Book, Transaction, Feedback
 
 from werkzeug.utils import secure_filename
-from flask import render_template, request, redirect, url_for, jsonify
+from flask import render_template, request, redirect, url_for, send_from_directory
 from flask_login import current_user, login_required, login_user, logout_user
 
+API_URL = "http://localhost:5000/api"
 
 def user_routes(app, db, bcrypt):
 
@@ -141,17 +142,32 @@ def user_routes(app, db, bcrypt):
     @login_required
     @role_required("user")
     def return_book(book_id):
-        if request.method=="GET":
-            return redirect(f"/book/{book_id}")
+        # if request.method=="GET":
+        #     return redirect(f"/book/{book_id}")
         
-        review = request.form.get("review", "")
+        return redirect(f"/book/{book_id}")
+
+    @app.route('/book/<int:book_id>/buy', methods=['POST'])
+    @login_required
+    @role_required("user")
+    def buy_book(book_id):
+        user = User.query.get(current_user.user_id)
+        book = Book.query.get(book_id)
+        # transaction = Transaction(user_id=current_user.user_id, book_id=book_id, tenure=0, status="bought")
+        # db.session.add(transaction)
+        # db.session.commit()
+        return send_from_directory(app.config['UPLOAD_FOLDER'], book.filename, as_attachment=True)
+    
+    @app.route('/book/<int:book_id>/review', methods=['POST'])
+    @login_required
+    @role_required("user")
+    def review_book(book_id):
+        # review, rating = take_review(request)
+        review = request.form.get("review")
         rating = request.form.get("rating")
-        transaction = Transaction.query.filter_by(user_id=current_user.user_id, book_id=book_id).order_by(Transaction.issued_at.desc()).first()
-        transaction.status = "returned"
-        transaction.returned_at = datetime.now()
-        feedback = Feedback(transaction_id=transaction.tid, review=review, rating=rating)
-        db.session.add(feedback)
-        db.session.commit()
+        status = request.form.get("status", "returned")
+        print(review, rating, status)
+        # finish_transaction(current_user, book_id, db, review, rating, status=status)
         return redirect(f"/book/{book_id}")
 
     @app.route('/profile')
@@ -203,10 +219,10 @@ def librarian_routes(app, db, bcrypt):
         code = None
         if request.method == "POST":
             if request.form.get("name"):    # For Adding a section
-                req = requests.post("http://localhost:5000/api/section",
+                req = requests.post(f"{API_URL}/section",
                                     json=request.form.to_dict(), headers={'Content-Type': 'application/json'})
             else:                           # For Deleting a section
-                req = requests.delete(f"http://localhost:5000/api/section/{request.form.get('section_id')}", json=request.form.to_dict(
+                req = requests.delete(f"{API_URL}/section/{request.form.get('section_id')}", json=request.form.to_dict(
                 ), headers={'Content-Type': 'application/json'})
 
             code = req.status_code
@@ -240,20 +256,20 @@ def librarian_routes(app, db, bcrypt):
                     if os.path.exists(filepath):
                         file_code = 409      # File already exists
                     else:
-                        data["filename"] = filename
+                        data["filename"] = filename.split(".")[0]
                         req = requests.post(
-                            f"http://localhost:5000/api/book/upload", json=data, headers={'Content-Type': 'application/json'})
+                            f"{API_URL}/book/upload", json=data, headers={'Content-Type': 'application/json'})
                         file_code = req.status_code
                         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 else:
                     file_code = -1      # Invalid file type
             
             else:       # Deleting a book
-                req = requests.delete(f"http://localhost:5000/api/book/{request.form.get('book_id')}", json=request.form.to_dict(
+                req = requests.delete(f"{API_URL}/book/{request.form.get('book_id')}", json=request.form.to_dict(
                 ), headers={'Content-Type': 'application/json'})
                 file_code = req.status_code
 
-        req = requests.get(f"http://localhost:5000/api/section/{section_id}")
+        req = requests.get(f"{API_URL}/section/{section_id}")
 
         return render_template("section.html", section=section, books=req.json(), file_code=file_code)
 

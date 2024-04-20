@@ -1,3 +1,4 @@
+from datetime import datetime
 import re
 from string import punctuation
 from app import ALLOWED_EXTENSIONS, UPLOAD_FOLDER
@@ -61,7 +62,7 @@ def get_book_details_for_user(user_id, book_id):
 
 
 def get_user_transactions(user_id):
-    return [t for t in get_transactions() if t.user_id == user_id]
+    return [t for t in get_transactions() if t.user_id == user_id and t.status != "bought"]
 
 def get_user_feedbacks(user_id):
     feedbacks = {}
@@ -139,3 +140,30 @@ def get_avg_rating(book_id):
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def check_user_purchased_book(user_id, book_id):
+    return all(
+        t.status == "bought" for t in get_transactions() if t.book_id == book_id and t.user_id == user_id
+    )
+
+
+def take_review(request):
+    review = request.form.get("review", "")
+    rating = request.form.get("rating")
+    return review, rating
+
+def finish_transaction(user, book_id, db, review, rating, *, status="returned"):
+    transaction = Transaction.query.filter_by(user_id=user.user_id, book_id=book_id).order_by(Transaction.issued_at.desc()).first()
+    if not transaction and status != "returned":
+        transaction = Transaction(user_id=user.user_id, book_id=book_id, tenure=0)
+        db.session.add(transaction)
+    else:
+        transaction.returned_at = datetime.now()
+    transaction.status = status
+    store_review(review, rating, transaction.tid, db)
+
+
+def store_review(review, rating, trans_id, db):
+    feedback = Feedback(transaction_id=trans_id, review=review, rating=rating)
+    db.session.add(feedback)
+    db.session.commit()

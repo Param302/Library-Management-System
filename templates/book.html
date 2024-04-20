@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{book.title}} | Library Management System</title>
+    <script src="{{url_for('static', filename='js/book.js')}}" defer></script>
 </head>
 
 <body>
@@ -16,10 +17,10 @@
         <p>Author: {{book.author}}</p>
         <p>Section: {{book.section}}</p>
         <p>Filetype: {{book.filetype}}</p>
-        {% if not book.status %}
+        {% if not user.is_authenticated %}
         <button onclick="showNotLoginText()">Read</button>
         <button onclick="showNotLoginText()">Buy</button>
-        <p id="not-login-text" style="display:none;">Please <a href="{{url_for('login')}}">login</a> to read or buy this book.</p>
+        <p id="not-login-text" style="display:none;">Please <a href="{{url_for('login')}}">login</a> to read or buy the book.</p>
         {% elif not book.status %}
         <form action="/book/{{book.book_id}}/issue" method="POST">
             <select name="days" id="days">
@@ -33,36 +34,27 @@
             </select>
             <button type="submit">Issue</button>
         </form>
+        <form action="/book/{{book.book_id}}/buy" method="POST">
+            <button type="submit" onclick="showAfterBuying()">Buy</button>
+        </form>
+        {% extends "buy_book.html" %}
+        <button>Purchase</button>
         {% elif book.status == "issued" or book.status == "overdue" %}
         <p>Issued on: {{book.issued_at}}</p>
         <p>Tenure: {{book.tenure}} days</p>
-        <a href="">Read book</a>
-        <button onclick="toggleFeedbackForm()">Return</button>
-        <form action="/book/{{book.book_id}}/return" method="POST" id="feedback-form" style="display:none;">
-            <textarea name="review" id="review" cols="50" rows="8"></textarea>
-            <select name="rating" id="rating">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5" selected>5</option>
-            </select>
-            <button type="submit">Return</button>
+        <a href="">Read book</a>    <!-- !should work for admin -->
+        <!-- !Not working RETURN accordingly. -->
+        <!-- <button>Return</button> -->
+        <form action="/book/{{book.book_id}}/return" method="POST">
+            <button type="submit" onclick="toggleFeedbackForm()">Returnnnnn</button>
         </form>
+        {% extends "review_form.html" %}
         {% else %}
         <p>Status: {{book.status}}</p>
         {% endif %}
     </main>
 </body>
 <script>
-    const feedbackForm = document.querySelector("#feedback-form");
-    function toggleFeedbackForm() {
-        feedbackForm.style.display = feedbackForm.style.display === "none" ? "block" : "none";
-    }
-    const notLoginText = document.querySelector("#not-login-text");
-    function showNotLoginText() {
-        notLoginText.style.display = "block";
-    }
 </script>
 
 </html>

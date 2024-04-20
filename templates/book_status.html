@@ -43,7 +43,7 @@
                         {% elif t.status == "issued" or t.status == "overdue" %}
                         <form action="/book_status" method="POST">
                             <input type="hidden" name="trans_id" id="trans_id" value="{{t.trans_id}}">
-                            <input type="hidden" name="status" id="status" value="return">
+                            <input type="hidden" name="status" id="status" value="returned">
                             <button type="submit">Revoke Access</button>
                         </form>
                         {% else %}
