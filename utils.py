@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 from string import punctuation
 from app import ALLOWED_EXTENSIONS, UPLOAD_FOLDER
@@ -141,10 +141,22 @@ def get_avg_rating(book_id):
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
+
 def check_user_purchased_book(user_id, book_id):
     return all(
         t.status == "bought" for t in get_transactions() if t.book_id == book_id and t.user_id == user_id
     )
+
+def within_download_period(book_id, user_id, transactions):
+    purchase_time = transactions[(user_id, book_id)]
+    current_time = datetime.now()
+    time_difference = current_time - purchase_time
+
+    if time_difference > timedelta(hours=24):
+        del transactions[(user_id, book_id)]
+        return False
+    return True
 
 def finish_transaction(user, book_id, db, review, rating, *, status="returned"):
     transaction = Transaction.query.filter_by(user_id=user.user_id, book_id=book_id, status="issued").order_by(Transaction.issued_at.desc()).first()

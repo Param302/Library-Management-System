@@ -20,7 +20,8 @@
         {% if not user.is_authenticated %}
         <button onclick="showNotLoginText()">Read</button>
         <button onclick="showNotLoginText()">Buy</button>
-        <p id="not-login-text" style="display:none;">Please <a href="{{url_for('login')}}">login</a> to read or buy the book.</p>
+        <p id="not-login-text" style="display:none;">Please <a href="{{url_for('login')}}">login</a> to read or buy the
+            book.</p>
         {% elif not book.status %}
         <form action="/book/{{book.book_id}}/issue" method="POST">
             <select name="days" id="days">
@@ -34,16 +35,27 @@
             </select>
             <button type="submit">Issue</button>
         </form>
-        <form action="/book/{{book.book_id}}/buy" method="POST">
-            <button type="submit" onclick="showAfterBuying()">Buy</button>
+        <button onclick="showBuySection()">Buy</button>
+        <form action="/book/{{book.book_id}}/buy" method="POST" id="buy-section" style="display:none;">
+            <h4>Price: ₹{{book.price}}</h4>
+            <p><b>Note:</b>You will be redirected to a transaction page, after successful payment, you will receive the download link.</p>
+            <p>If you face any issue please contact admin at <a href="mailto:admin@lbs.com">admin@lbs.com</a></p>
+            <label for="agree">
+                <input type="checkbox" name="agree" id="agree" required>
+                I agree to the <a href="/terms">Terms & Conditions</a>
+            </label>
+            <br>
+            <button type="submit" onclick="showAfterBuying()">Purchase Book</button>
         </form>
-        {% set status = "bought" %}
-        {% extends "buy_book.html" %}
-        <button>Purchase</button>
+        Download link: {{download_link}}
+        {% if download_link %}
+            {% set status = "bought" %}
+            {% extends "buy_book.html" %}
+        {% endif %}
         {% elif book.status == "issued" or book.status == "overdue" %}
         <p>Issued on: {{book.issued_at}}</p>
         <p>Tenure: {{book.tenure}} days</p>
-        <a href="">Read book</a>    <!-- !should work for admin -->
+        <a href="">Read book</a> <!-- !should work for admin -->
         <button onclick="toggleFeedbackForm()">Return</button>
         {% set status = "returned" %}
         {% set return_text = "Return book" %}
