@@ -2,7 +2,7 @@ import os
 import requests
 from functools import wraps
 from datetime import datetime
-from utils import allowed_file, finish_transaction, get_book_details, get_book_details_for_user, get_transactional_details, is_valid_password, get_sections, get_user_books, get_users, get_books_data, take_review
+from utils import allowed_file, finish_transaction, get_book_details, get_book_details_for_user, get_transactional_details, is_valid_password, get_sections, get_user_books, get_users, get_books_data
 from models import User, Section, Book, Transaction, Feedback
 
 from werkzeug.utils import secure_filename
@@ -142,9 +142,14 @@ def user_routes(app, db, bcrypt):
     @login_required
     @role_required("user")
     def return_book(book_id):
-        # if request.method=="GET":
-        #     return redirect(f"/book/{book_id}")
+        if request.method=="GET":
+            return redirect(f"/book/{book_id}")
         
+        review = request.form.get("review")
+        rating = request.form.get("rating")
+        status = request.form.get("status", "returned")
+        print(review, rating, status)
+        finish_transaction(current_user, book_id, db, review, rating, status=status)
         return redirect(f"/book/{book_id}")
 
     @app.route('/book/<int:book_id>/buy', methods=['POST'])

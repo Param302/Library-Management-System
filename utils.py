@@ -119,14 +119,14 @@ def get_transactional_details():
         book["status"] = t.status
         details.append(book)
     
-    transactions = {"pending": [], "issued": [], "returned": [], "overdue": []}
+    transactions = {"pending": [], "issued": [], "returned": [], "overdue": [], "bought": []}
     for d in details:
         transactions[d["status"]].append(d)
 
     return transactions
 
 def get_avg_rating(book_id):
-    trans = [i.tid for i in get_transactions() if i.book_id == book_id and i.status == "returned"]
+    trans = [i.tid for i in get_transactions() if i.book_id == book_id and i.status in ("returned", "bought")]
     total_rating = 0
     n = 0
     for t in trans:
@@ -146,14 +146,8 @@ def check_user_purchased_book(user_id, book_id):
         t.status == "bought" for t in get_transactions() if t.book_id == book_id and t.user_id == user_id
     )
 
-
-def take_review(request):
-    review = request.form.get("review", "")
-    rating = request.form.get("rating")
-    return review, rating
-
 def finish_transaction(user, book_id, db, review, rating, *, status="returned"):
-    transaction = Transaction.query.filter_by(user_id=user.user_id, book_id=book_id).order_by(Transaction.issued_at.desc()).first()
+    transaction = Transaction.query.filter_by(user_id=user.user_id, book_id=book_id, status="issued").order_by(Transaction.issued_at.desc()).first()
     if not transaction and status != "returned":
         transaction = Transaction(user_id=user.user_id, book_id=book_id, tenure=0)
         db.session.add(transaction)

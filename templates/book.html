@@ -37,17 +37,16 @@
         <form action="/book/{{book.book_id}}/buy" method="POST">
             <button type="submit" onclick="showAfterBuying()">Buy</button>
         </form>
+        {% set status = "bought" %}
         {% extends "buy_book.html" %}
         <button>Purchase</button>
         {% elif book.status == "issued" or book.status == "overdue" %}
         <p>Issued on: {{book.issued_at}}</p>
         <p>Tenure: {{book.tenure}} days</p>
         <a href="">Read book</a>    <!-- !should work for admin -->
-        <!-- !Not working RETURN accordingly. -->
-        <!-- <button>Return</button> -->
-        <form action="/book/{{book.book_id}}/return" method="POST">
-            <button type="submit" onclick="toggleFeedbackForm()">Returnnnnn</button>
-        </form>
+        <button onclick="toggleFeedbackForm()">Return</button>
+        {% set status = "returned" %}
+        {% set return_text = "Return book" %}
         {% extends "review_form.html" %}
         {% else %}
         <p>Status: {{book.status}}</p>
