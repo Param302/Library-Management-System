@@ -21,7 +21,7 @@
                 <p>{{book.author}}</p>
                 <p>Filetype: {{book.filetype}}</p>
                 <button>Read book</button>
-                <form action="/s/{{section.section_id}}" method="POST">
+                <form action="/section/{{section.section_id}}" method="POST">
                     <input type="hidden" name="book_id" value="{{book.book_id}}">
                     <button>Delete Book</button>
                 </form>
@@ -30,7 +30,7 @@
         </ul>
         <h2>File Upload</h2>
         {{file_code}}
-        <form action="/s/{{section.section_id}}" id="addbook" method="POST" enctype="multipart/form-data">
+        <form action="/section/{{section.section_id}}" id="addbook" method="POST" enctype="multipart/form-data">
             <label for="title">Title</label>
             <input type="text" name="title" id="title" required>
             <label for="author">Author</label>

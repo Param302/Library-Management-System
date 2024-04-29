@@ -1,6 +1,6 @@
 import os
 from models import Book, Section
-from utils import get_books_by_section, UPLOAD_FOLDER
+from utils import get_book_details, get_books_by_section, UPLOAD_FOLDER
 
 from app import db
 from flask_restful import Resource, reqparse, fields, marshal_with
@@ -78,7 +78,7 @@ class SectionAPI(Resource):
 class BookAPI(Resource):
 
     def get(self, book_id):
-        book = Book.query.get(book_id)
+        book = get_book_details(book_id)
         if not book:
             return {"message": "Book not found"}, 404
         return book, 200

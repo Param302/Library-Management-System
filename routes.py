@@ -12,7 +12,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 API_URL = "http://localhost:5000/api"
 
 def user_routes(app, db, bcrypt):
-    transactions = {}
+
     @app.route('/')
     def index():
         books_data = get_books_data()
@@ -112,6 +112,19 @@ def user_routes(app, db, bcrypt):
         logout_user()
         return redirect(url_for("index"))
 
+    @app.route('/profile')
+    @login_required
+    @role_required("user")
+    def profile():
+        user_books = get_user_books(current_user.user_id)
+        return render_template("profile.html", user=current_user, books=user_books)
+
+    @app.route('/u/@<string:username>')
+    def user_profile(username):
+        user = User.query.filter_by(username=username).first()
+        user_books = get_user_books(user.user_id)
+        return render_template("user_profile.html", user=user, books=user_books)
+
     @app.route('/dashboard')
     @login_required
     @role_required("user")
@@ -122,11 +135,13 @@ def user_routes(app, db, bcrypt):
     @app.route('/book/<int:book_id>')
     def book(book_id):
         book = get_book_details(book_id)
+        response = requests.get(f"{API_URL}/book/{book_id}")
+        book = response.json()
+        
         if current_user.is_authenticated and current_user.role == "user":
             book = get_book_details_for_user(current_user.user_id, book_id)
         
         if (download_link:=get_book_download_code(current_user.user_id, book_id)):
-            print(download_link)
             return render_template("book.html", book=book, user=current_user, download_link=download_link)
 
         return render_template("book.html", book=book, user=current_user)
@@ -152,8 +167,6 @@ def user_routes(app, db, bcrypt):
         
         review = request.form.get("review")
         rating = request.form.get("rating")
-        status = request.form.get("status", "returned")
-        print(review, rating, status)
         finish_transaction(current_user, book_id, db, review, rating)
         return redirect(f"/book/{book_id}")
 
@@ -168,27 +181,19 @@ def user_routes(app, db, bcrypt):
         payment_id = 123
         amt = 500
         if payment_status:
-            print("YESS")
-            # time = datetime.now()
             t = Transaction(user_id=current_user.user_id, book_id=book_id, tenure=24, status="bought")
             db.session.add(t)
             db.session.commit()
             p = Purchase(transaction_id=t.tid, amount=amt, payment_id=payment_id, download_code=generate_string())
             db.session.add(p)
             db.session.commit()
-            time = p.created_at
-            print("Transaction and purchase added")
-            print(time, dir(time))
-            # transactions[(current_user.user_id, book_id)] = (time, string)
-            # print(transactions)
-            return redirect(url_for("book", book_id=book_id, payment_success=payment_status, time=time))
+            return redirect(url_for("book", book_id=book_id, payment_success=payment_status))
         return redirect(f"/book/{book_id}")
     
     @app.route("/book/<int:book_id>/download/<string:code>")
     @login_required
     @role_required("user")
     def download_book(book_id, code):
-        # if (current_user.user_id, book_id) in transactions and within_download_period(book_id, current_user.user_id, transactions):
         if get_book_download_code(current_user.user_id, book_id) == code:
             b = Book.query.get(book_id)
             return send_from_directory(app.config['UPLOAD_FOLDER'], f"{b.filename}.{b.filetype}", as_attachment=True)
@@ -201,24 +206,9 @@ def user_routes(app, db, bcrypt):
     def review_book(book_id):
         review = request.form.get("review")
         rating = request.form.get("rating")
-        status = request.form.get("status", "bought")
-        print(review, rating, status)
         trans = Transaction.query.filter_by(user_id=current_user.user_id, book_id=book_id, status="bought").first()
         store_review(review, rating, trans.tid, db)
         return redirect(f"/book/{book_id}")
-
-    @app.route('/profile')
-    @login_required
-    @role_required("user")
-    def profile():
-        user_books = get_user_books(current_user.user_id)
-        return render_template("profile.html", user=current_user, books=user_books)
-
-    @app.route('/u/@<string:username>')
-    def user_profile(username):
-        user = User.query.filter_by(username=username).first()
-        user_books = get_user_books(user.user_id)
-        return render_template("user_profile.html", user=user, books=user_books)
 
 
 def librarian_routes(app, db, bcrypt):
@@ -266,9 +256,7 @@ def librarian_routes(app, db, bcrypt):
         sections = get_sections()
         return render_template("all_sections.html", sections=sections, code=code)
 
-    # !PENDING: Adding Books in section and CRUD API of section and books
-
-    @app.route('/s/<int:section_id>', methods=['GET', 'POST'])
+    @app.route('/section/<int:section_id>', methods=['GET', 'POST'])
     @login_required
     @role_required("admin")
     def section(section_id):
@@ -341,8 +329,6 @@ def role_required(role):
         @wraps(func)
         def wrapper(*args, **kwargs):
             if current_user.role != role:
-                # !NOTE: Changes so that user can login and then redirect to the original page
-                # For admin, redirect to admin page
                 return redirect(url_for('index'))
             return func(*args, **kwargs)
         return wrapper

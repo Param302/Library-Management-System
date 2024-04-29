@@ -24,8 +24,8 @@
             <li>
                 <h3>{{section.name}}</h3>
                 <p>{{section.description}}</p>
-                <p><a href="/s/{{section.section_id}}">See Books</a></p>
-                <p><a href="/s/{{section.section_id}}#addbook">+ Add book</a></p>
+                <p><a href="/section/{{section.section_id}}">See Books</a></p>
+                <p><a href="/section/{{section.section_id}}#addbook">+ Add book</a></p>
                 <form action="/sections" method="POST">
                     <input type="hidden" name="section_id" value="{{section.section_id}}">
                     <button>Delete Section</button>
