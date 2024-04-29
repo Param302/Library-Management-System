@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
+import random
 import re
-from string import punctuation
+from string import ascii_letters, digits, punctuation
 from app import ALLOWED_EXTENSIONS, UPLOAD_FOLDER
-from models import User, Section, Book, Transaction, Feedback
+from models import Purchase, User, Section, Book, Transaction, Feedback
 
 def is_valid_password(password, username):
     return (
@@ -13,6 +14,10 @@ def is_valid_password(password, username):
         and re.search(r'\d', password)
         and any(c in punctuation for c in password)
     )
+
+def generate_string(length=12):
+    return "".join(random.choices(ascii_letters + digits, k=length))
+
 
 def get_users():
     return User.query.filter_by(role="user").all()
@@ -58,6 +63,8 @@ def get_book_details_for_user(user_id, book_id):
             details["tenure"] = t.tenure
             details["status"] = t.status
             break
+    if has_user_purchased_book(user_id, book_id):
+        details["status"] = "bought"
     return details
 
 
@@ -141,15 +148,20 @@ def get_avg_rating(book_id):
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def has_user_purchased_book(user_id, book_id):
+    trans = [t.tid for t in get_transactions() if t.book_id == book_id and t.user_id == user_id and t.status == "bought"]
+
+    return False if not trans else trans[0]
 
 
-def check_user_purchased_book(user_id, book_id):
-    return all(
-        t.status == "bought" for t in get_transactions() if t.book_id == book_id and t.user_id == user_id
-    )
+def get_book_download_code(user_id, book_id):
+    if not (trans_id:=has_user_purchased_book(user_id, book_id)):
+        return None
+    
+    return Purchase.query.filter_by(transaction_id=trans_id).first().download_code
 
 def within_download_period(book_id, user_id, transactions):
-    purchase_time = transactions[(user_id, book_id)]
+    purchase_time = transactions[(user_id, book_id)][0]
     current_time = datetime.now()
     time_difference = current_time - purchase_time
 
@@ -158,14 +170,10 @@ def within_download_period(book_id, user_id, transactions):
         return False
     return True
 
-def finish_transaction(user, book_id, db, review, rating, *, status="returned"):
+def finish_transaction(user, book_id, db, review, rating):
     transaction = Transaction.query.filter_by(user_id=user.user_id, book_id=book_id, status="issued").order_by(Transaction.issued_at.desc()).first()
-    if not transaction and status != "returned":
-        transaction = Transaction(user_id=user.user_id, book_id=book_id, tenure=0)
-        db.session.add(transaction)
-    else:
-        transaction.returned_at = datetime.now()
-    transaction.status = status
+    transaction.returned_at = datetime.now()
+    transaction.status = "returned"
     store_review(review, rating, transaction.tid, db)
 
 

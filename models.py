@@ -85,3 +85,18 @@ class Feedback(db.Model):
     def get_id(self):
         return self.feedback_id
 
+class Purchase(db.Model):
+    __tablename__ = "purchases"
+
+    pid = db.Column(db.Integer, primary_key=True)
+    transaction_id = db.Column(db.Integer, db.ForeignKey('transactions.tid'), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    payment_id = db.Column(db.String(100), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    download_code = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f"<Purchase {self.pid} of Transaction Id: {self.transaction_id}>"
+    
+    def get_id(self):
+        return self.pid

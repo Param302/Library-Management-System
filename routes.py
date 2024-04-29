@@ -2,8 +2,8 @@ import os
 import requests
 from functools import wraps
 from datetime import datetime, timedelta
-from utils import allowed_file, finish_transaction, get_book_details, get_book_details_for_user, get_transactional_details, is_valid_password, get_sections, get_user_books, get_users, get_books_data, within_download_period
-from models import User, Section, Book, Transaction, Feedback
+from utils import allowed_file, finish_transaction, generate_string, get_book_details, get_book_details_for_user, get_book_download_code, get_transactional_details, is_valid_password, get_sections, get_user_books, get_users, get_books_data, store_review, within_download_period
+from models import User, Section, Book, Transaction, Feedback, Purchase
 
 from werkzeug.utils import secure_filename
 from flask import render_template, request, redirect, url_for, send_from_directory
@@ -125,18 +125,9 @@ def user_routes(app, db, bcrypt):
         if current_user.is_authenticated and current_user.role == "user":
             book = get_book_details_for_user(current_user.user_id, book_id)
         
-        payment_success = request.args.get("payment_success")
-        if payment_success:
-            if (current_user.user_id, book_id) in transactions and within_download_period(book_id, current_user.user_id, transactions):
-                print("PRESENT SIR")
-                b = Book.query.get(book_id)
-
-                # ! Dowload option available here
-                # For downloading, create a temporary route of random string, verify the time & and allow user to download it. If time expires, redirects back to book
-                # Add a random string with timestamp in `transactions` dict
-                download_link = send_from_directory(app.config['UPLOAD_FOLDER'], f"{b.filename}.{b.filetype}", as_attachment=True)
-                print(dir(download_link), download_link.get_data())
-                return render_template("book.html", book=book, user=current_user, download_link=download_link)
+        if (download_link:=get_book_download_code(current_user.user_id, book_id)):
+            print(download_link)
+            return render_template("book.html", book=book, user=current_user, download_link=download_link)
 
         return render_template("book.html", book=book, user=current_user)
 
@@ -163,7 +154,7 @@ def user_routes(app, db, bcrypt):
         rating = request.form.get("rating")
         status = request.form.get("status", "returned")
         print(review, rating, status)
-        finish_transaction(current_user, book_id, db, review, rating, status=status)
+        finish_transaction(current_user, book_id, db, review, rating)
         return redirect(f"/book/{book_id}")
 
     @app.route('/book/<int:book_id>/buy', methods=['POST'])
@@ -174,14 +165,36 @@ def user_routes(app, db, bcrypt):
         if not user_agreed:
             return redirect(f"/book/{book_id}")
         payment_status = True
+        payment_id = 123
+        amt = 500
         if payment_status:
             print("YESS")
-            time = datetime.now()
-            transactions[(current_user.user_id, book_id)] = time
-            print(transactions)
-            return redirect(url_for("book", book_id=book_id, payment_success=payment_status, time=time.timestamp()))
+            # time = datetime.now()
+            t = Transaction(user_id=current_user.user_id, book_id=book_id, tenure=24, status="bought")
+            db.session.add(t)
+            db.session.commit()
+            p = Purchase(transaction_id=t.tid, amount=amt, payment_id=payment_id, download_code=generate_string())
+            db.session.add(p)
+            db.session.commit()
+            time = p.created_at
+            print("Transaction and purchase added")
+            print(time, dir(time))
+            # transactions[(current_user.user_id, book_id)] = (time, string)
+            # print(transactions)
+            return redirect(url_for("book", book_id=book_id, payment_success=payment_status, time=time))
         return redirect(f"/book/{book_id}")
     
+    @app.route("/book/<int:book_id>/download/<string:code>")
+    @login_required
+    @role_required("user")
+    def download_book(book_id, code):
+        # if (current_user.user_id, book_id) in transactions and within_download_period(book_id, current_user.user_id, transactions):
+        if get_book_download_code(current_user.user_id, book_id) == code:
+            b = Book.query.get(book_id)
+            return send_from_directory(app.config['UPLOAD_FOLDER'], f"{b.filename}.{b.filetype}", as_attachment=True)
+        return redirect(f"/book/{book_id}")
+
+
     @app.route('/book/<int:book_id>/review', methods=['POST'])
     @login_required
     @role_required("user")
@@ -190,7 +203,8 @@ def user_routes(app, db, bcrypt):
         rating = request.form.get("rating")
         status = request.form.get("status", "bought")
         print(review, rating, status)
-        finish_transaction(current_user, book_id, db, review, rating, status=status)
+        trans = Transaction.query.filter_by(user_id=current_user.user_id, book_id=book_id, status="bought").first()
+        store_review(review, rating, trans.tid, db)
         return redirect(f"/book/{book_id}")
 
     @app.route('/profile')

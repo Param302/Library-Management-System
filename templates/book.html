@@ -37,8 +37,9 @@
         </form>
         <button onclick="showBuySection()">Buy</button>
         <form action="/book/{{book.book_id}}/buy" method="POST" id="buy-section" style="display:none;">
-            <h4>Price: ₹{{book.price}}</h4>
-            <p><b>Note:</b>You will be redirected to a transaction page, after successful payment, you will receive the download link.</p>
+            <h4>Price: ₹200</h4>
+            <p><b>Note:</b>You will be redirected to a transaction page, after successful payment, you will receive the
+                download link.</p>
             <p>If you face any issue please contact admin at <a href="mailto:admin@lbs.com">admin@lbs.com</a></p>
             <label for="agree">
                 <input type="checkbox" name="agree" id="agree" required>
@@ -47,19 +48,50 @@
             <br>
             <button type="submit" onclick="showAfterBuying()">Purchase Book</button>
         </form>
-        Download link: {{download_link}}
-        {% if download_link %}
-            {% set status = "bought" %}
-            {% extends "buy_book.html" %}
-        {% endif %}
         {% elif book.status == "issued" or book.status == "overdue" %}
         <p>Issued on: {{book.issued_at}}</p>
         <p>Tenure: {{book.tenure}} days</p>
         <a href="">Read book</a> <!-- !should work for admin -->
         <button onclick="toggleFeedbackForm()">Return</button>
-        {% set status = "returned" %}
-        {% set return_text = "Return book" %}
-        {% extends "review_form.html" %}
+        <form action="/book/{{book.book_id}}/review" method="POST" id="feedback-form" style="display:none;">
+            <h4>Feedback Form</h4>
+            <p>Please let us know how's the book?</p>
+            <textarea name="review" id="review" cols="50" rows="8"></textarea>
+            <select name="rating" id="rating">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5" selected>5</option>
+            </select>
+            <input type="hidden" name="status" value="{{status}}">
+            <button type="submit">Return book</button>
+        </form>
+        {% elif book.status == "bought" %}
+        <h4>You've purchased the book!</h4>
+        <p>
+            Please take a minute to provide the feedback. Your feedback is valuable to us.
+            <br>
+            Click <button onclick="toggleFeedbackForm()">here</button> to provide feedback.
+            <form action="/book/{{book.book_id}}/review" method="POST" id="feedback-form" style="display:none;">
+                <h4>Feedback Form</h4>
+                <textarea name="review" id="review" cols="50" rows="8"></textarea>
+                <select name="rating" id="rating">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5" selected>5</option>
+                </select>
+                <input type="hidden" name="status" value="{{status}}">
+                <button type="submit">Submit</button>
+            </form>
+        </p>
+        {% block content %}
+        <button><a href="">Read</a></button>
+        or
+        <a href="/book/{{book.book_id}}/download/{{download_link}}">Download</a> the book.
+        {% endblock %}
         {% else %}
         <p>Status: {{book.status}}</p>
         {% endif %}
