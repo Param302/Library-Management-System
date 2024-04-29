@@ -4,34 +4,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library Management System</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='assets/logo.ico')}}">
+    <title>E-Pustakalya</title>
 </head>
 
 <body>
     <header>
-        <h1>Library Management System</h1>
-        {% if user %}
-        <h1>Welcome, {{ user.username }}</h1>
-        <a href="{{ url_for('index')}}">Home</a>
-        {% if user.role == "admin" %}
-        <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
-        <a href="{{ url_for('book_status')}}">Books Status</a>
-        <a href="{{ url_for('all_sections')}}">Sections</a>
-        <a href="{{ url_for('all_users')}}">Users</a>
-        {% else %}
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('profile') }}">Profile</a>
-        {% endif %}
-        <a href="{{ url_for('logout') }}">Logout</a>
-        {% else %}
-        <h1>Welcome, Guest</h1>
-        <a href="{{ url_for('login') }}">Sign in</a>
-        <a href="{{ url_for('register') }}">Sign Up</a>
-        {% endif %}
-        <form action="/search">
+        <div id="name">
+            <img src="{{url_for('static', filename='assets/circle-logo.png')}}" alt="logo">
+            <h1>E-Pustakalya</h1>
+        </div>
+        <form action="/search" id="search-form">
             <input type="text" name="q" id="query" placeholder="Type any Book or Author" value="{{query}}">
-            <button type="submit">Search</button>
+            <button type="submit" id="search-button">🔍</button>
         </form>
+        {% if user %}
+        <nav>
+            <div>
+                <span id="user">
+                    <img src="" alt="av">
+                    <span>{{ user.username }}</span>
+                </span>
+                <button id="nav-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <ul id="nav-menu"> <!-- This will be a dropdown on left under user icon -->
+                <li><a href="{{ url_for('index')}}">Home</a></li>
+
+                {% if user.role == "admin" %}
+                <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('book_status')}}">Books Status</a></li>
+                <li><a href="{{ url_for('all_sections')}}">Sections</a></li>
+                <li><a href="{{ url_for('all_users')}}">Users</a></li>
+                {% else %}
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+        {% else %}
+        <ul>
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+        </ul>
+        {% endif %}
     </header>
     <main>
         <h2>Books:</h2>

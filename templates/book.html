@@ -4,13 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{book.title}} | Library Management System</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='assets/logo.ico')}}">
+    <title>{{book.title}} | E-Pustakalya</title>
     <script src="{{url_for('static', filename='js/book.js')}}" defer></script>
 </head>
 
 <body>
     <header>
-        <h1>Library Management System</h1>
+        <h1>E-Pustakalya</h1>
     </header>
     <main>
         <h1>{{book.title}}</h1>
@@ -73,19 +75,19 @@
             Please take a minute to provide the feedback. Your feedback is valuable to us.
             <br>
             Click <button onclick="toggleFeedbackForm()">here</button> to provide feedback.
-            <form action="/book/{{book.book_id}}/review" method="POST" id="feedback-form" style="display:none;">
-                <h4>Feedback Form</h4>
-                <textarea name="review" id="review" cols="50" rows="8"></textarea>
-                <select name="rating" id="rating">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5" selected>5</option>
-                </select>
-                <input type="hidden" name="status" value="{{status}}">
-                <button type="submit">Submit</button>
-            </form>
+        <form action="/book/{{book.book_id}}/review" method="POST" id="feedback-form" style="display:none;">
+            <h4>Feedback Form</h4>
+            <textarea name="review" id="review" cols="50" rows="8"></textarea>
+            <select name="rating" id="rating">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5" selected>5</option>
+            </select>
+            <input type="hidden" name="status" value="{{status}}">
+            <button type="submit">Submit</button>
+        </form>
         </p>
         {% block content %}
         <button><a href="">Read</a></button>

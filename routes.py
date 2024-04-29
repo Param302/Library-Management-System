@@ -1,9 +1,9 @@
 import os
 import requests
 from functools import wraps
-from datetime import datetime, timedelta
-from utils import allowed_file, finish_transaction, generate_string, get_book_details, get_book_details_for_user, get_book_download_code, get_transactional_details, is_valid_password, get_sections, get_user_books, get_users, get_books_data, store_review, within_download_period
-from models import User, Section, Book, Transaction, Feedback, Purchase
+from datetime import datetime
+from utils import allowed_file, finish_transaction, generate_string, get_book_details, get_book_details_for_user, get_book_download_code, get_transactional_details, is_valid_password, get_sections, get_user_books, get_users, get_books_data, store_review
+from models import User, Section, Book, Transaction, Purchase
 
 from werkzeug.utils import secure_filename
 from flask import render_template, request, redirect, url_for, send_from_directory
@@ -288,7 +288,6 @@ def librarian_routes(app, db, bcrypt):
                         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 else:
                     file_code = -1      # Invalid file type
-            
             else:       # Deleting a book
                 req = requests.delete(f"{API_URL}/book/{request.form.get('book_id')}", json=request.form.to_dict(
                 ), headers={'Content-Type': 'application/json'})
