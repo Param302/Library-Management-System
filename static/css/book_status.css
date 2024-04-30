@@ -17,8 +17,6 @@ main li {
     padding: 2rem 0;
     margin: 2rem 6rem;
     font-family: "Baloo", sans-serif !important;
-    /* border-bottom: 2px solid black; */
-    /* background-color: var(--offwhite-color); */
 }
 
 .status {

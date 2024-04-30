@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="{{url_for('static', filename='js/index.js')}}" defer></script>
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/login.css')}}">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
     <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='assets/logo.ico')}}">
     <title>Admin | E-Pustakalya</title>
@@ -13,18 +14,31 @@
 
 <body>
     <header>
-        <h1>E-Pustakalya</h1>
+        <div id="name"><a href="/">
+                <img src="{{url_for('static', filename='assets/circle-logo.png')}}" alt="logo">
+                <h1>E-Pustakalya</h1>
+            </a></div>
     </header>
     <main>
-        <h1>Admin Login</h1>
-        {% if invalid_credentials %}
-        <p style="color: red;">Invalid username or password.</p>
-        {% endif %}
-        <form action="{{ url_for('admin') }}" method="POST">
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Log In</button>
-        </form>
+        <div id="login-container">
+
+            <h1 id="heading">Admin Login</h1>
+            {% if invalid_credentials %}
+            <p class="invalid-creds">Invalid username or password.</p>
+            {% endif %}
+            <form action="{{ url_for('admin') }}" method="POST" id="login-form">
+                <label for="username">
+                    <span>Username</span>
+                    <input type="text" id="username" name="username" placeholder="user.name" required>
+                </label> <br>
+                <label for="password">
+                    <span>Password</span>
+                    <input type="password" id="password" name="password" placeholder="shhh!" required>
+                </label> <br>
+                <button type="submit">Sign In</button>
+            </form>
+            <p id="new-user">Not an Admin? Please <a href="{{ url_for('register') }}">Sign In</a> as a user.</p>
+        </div>
     </main>
 </body>
 

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="{{url_for('static', filename='js/index.js')}}" defer></script>
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/login.css')}}">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
     <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='assets/logo.ico')}}">
     <title>Sign Up | E-Pustakalya</title>
@@ -19,53 +20,67 @@
             </a></div>
     </header>
     <main>
-        <h1>Sign Up</h1>
-        {% if incomplete_pass %}
-        <h3 style="color: red;">Invalid Password!</h3>
-        <p>Password must:</p>
-        <ul>
-            <li>Be at least 8 characters long</li>
-            <li>Contain at least one lowercase letter</li>
-            <li>Contain at least one uppercase letter</li>
-            <li>Contain at least one number</li>
-            <li>Contain at least one special character</li>
-        </ul>
-        {% endif %}
-        {% if password_mismatch %}
-        <p style="color: red;">Passwords do not match. Please try again.</p>
-        {% elif user_exists %}
-        <p>User already exists with
-            {% if username %}
-            username: "{{ username }}"
-            {% else %}
-            email: "{{ email }}"
-            {% endif %}.
-        </p>
-        <p>Please <a href="{{ url_for('login')}}">Sign in</a>.</p>
-        {% elif password_mismatch %}
-        <p style="color: red;">Passwords do not match. Please try again.</p>
-        {% elif success %}
-        <p style="color: green;">User registered successfully. Please <a href="{{ url_for('login')}}">Sign in</a>.</p>
-        {% endif %}
-        <form action="{{ url_for('register')}}" method="POST">
-            <label for="name">Name</label>
-            <input type="text" name="name" id="name" required>
-            <br>
-            <label for="email">Email</label>
-            <input type="email" name="email" id="email" required>
-            <br>
-            <label for="username">Username</label>
-            <input type="text" name="username" id="username" required>
-            <br>
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" required>
-            <br>
-            <label for="confirm_password">Confirm Password</label>
-            <input type="password" name="confirm_password" id="confirm_password" required>
-            <br>
-            <button type="submit">Sign Up</button>
-        </form>
-        <p>Already have an account? Please <a href="{{ url_for('login') }}">Sign In</a> here.</p>
+        <div id="login-container">
+
+            <h1 id="heading">Sign Up</h1>
+            {% if incomplete_pass %}
+            <h3 class="invalid-creds">Invalid Password!</h3>
+            <ul>
+                <li>Be at least 8 characters long</li>
+                <li>Contain at least one lowercase letter</li>
+                <li>Contain at least one uppercase letter</li>
+                <li>Contain at least one number</li>
+                <li>Contain at least one special character</li>
+            </ul>
+            {% endif %}
+            {% if password_mismatch %}
+            <p class="invalid-creds">Passwords do not match. Please try again.</p>
+            {% elif user_exists %}
+            <p class="invalid-creds">User already exists with
+                {% if username %}
+                username: "{{ username }}"
+                {% else %}
+                email: "{{ email }}"
+                {% endif %}.
+            </p>
+            <p class="invalid-creds">Please <a href="{{ url_for('login')}}">Sign in</a>.</p>
+            {% elif password_mismatch %}
+            <p class="invalid-creds">Passwords do not match. Please try again.</p>
+            {% elif success %}
+            <p style="color: green;">User registered successfully. Please <a href="{{ url_for('login')}}">Sign in</a>.
+            </p>
+            {% endif %}
+            <form action="{{ url_for('register')}}" method="POST" id="signup-form">
+                <label for="Name">
+                    <span>Name</span>
+                    <input type="name" name="name" id="Name" placeholder="John Smith" required>
+                </label>
+                <label for="email">
+                    <span>Email</span>
+                    <input type="email" name="email" id="email" placeholder="john@smith.com" required>
+                </label>
+                <br>
+                <br>
+                <label for="username">
+                    <span>Username</span>
+                    <input type="text" name="username" id="username" placeholder="john.smith" required>
+                </label>
+                <br>
+                <label for="password">
+                    <span>Password</span>
+                    <input type="password" name="password" id="password" placeholder="shhh!" required>
+                </label>
+                <br>
+                <label for="confirm_password">
+                    <span>Confirm Password</span>
+                    <input type="password" name="confirm_password" id="confirm_password" placeholder="Again shhh!"
+                        required>
+                </label>
+                <br>
+                <button type="submit">Sign Up</button>
+            </form>
+            <p id="new-user">Already have an account? Please <a href="{{ url_for('login') }}">Sign In</a>.</p>
+        </div>
     </main>
 </body>
 

@@ -1,0 +1,89 @@
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#login-container {
+    padding: 5rem 10rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--offwhite-color);
+}
+
+#heading {
+    font-family: "Sarala", sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+#login-form, #signup-form {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    /* background-color: var(--background-color); */
+    font-size: 1.5rem;
+    font-family: "Arimo", sans-serif;
+    margin-top: 2rem;
+}
+
+#login-form span, #signup-form span {
+    color: var(--accent-color);
+    font-weight: 600;
+    font-family: "Arimo", sans-serif;
+
+}
+
+#login-form input, #signup-form input {
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+    border-style: solid;
+    background-color: var(--background-color);
+}
+
+#login-form input:focus, #signup-form input:focus {
+    border-color: var(--accent-color);
+    background-color: var(--offwhite-color);
+}
+
+#login-form button, #signup-form button {
+    align-self: center;
+    margin: 2rem 0 3rem 0;
+    padding: 1rem 3rem;
+    font-size: 1.5rem;
+    font-family: "Arimo", sans-serif;
+    font-weight: 600;
+    background-color: var(--accent-color);
+    color: var(--offwhite-color);
+    border: none;
+}
+
+#login-form button:hover, #signup-form button:hover {
+    transform: scale(1.05);
+}
+
+#login-form button:active, #signup-form button:active {
+    transform: scale(0.9);
+    transition-duration: 100ms;
+}
+
+#new-user a, .invalid-creds a {
+    color: var(--accent-color);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#new-user a:hover, .invalid-creds a {
+    text-decoration: underline;
+}
+
+.invalid-creds {
+    color: var(--error-color);
+    font-weight: 600;
+    font-family: "Arima", sans-serif;
+}
