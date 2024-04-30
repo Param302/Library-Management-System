@@ -116,21 +116,30 @@ def user_routes(app, db, bcrypt):
     @login_required
     @role_required("user")
     def profile():
-        user_books = get_user_books(current_user.user_id)
-        return render_template("profile.html", user=current_user, books=user_books)
+        books = get_user_books(current_user.user_id)
+        books_status = {"issued": [], "bought": []}
+        for b in books:
+            if b["status"] in books_status:
+                books_status[b["status"]].append(b)
+        
+        return render_template("profile.html", user=current_user, books_status=books_status)
 
     @app.route('/u/@<string:username>')
     def user_profile(username):
         user = User.query.filter_by(username=username).first()
-        user_books = get_user_books(user.user_id)
-        return render_template("user_profile.html", user=user, books=user_books)
+        books = get_user_books(user.user_id)
+        books_status = {"issued": [], "bought": []}
+        for b in books:
+            if b["status"] in books_status:
+                books_status[b["status"]].append(b)
+        
+        return render_template("user_profile.html", user=user, books_status=books_status)
 
     @app.route('/dashboard')
     @login_required
     @role_required("user")
     def dashboard():
         books = get_user_books(current_user.user_id)
-
         books_status = {"overdue": [], "issued": [], "bought": [], "returned": [], "pending": []}
         for b in books:
             books_status[b["status"]].append(b)

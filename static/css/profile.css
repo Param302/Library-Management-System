@@ -1,7 +1,78 @@
+@import url("books.css");
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: left;
+    margin: auto;
+    font-family: "Arimo", sans-serif;
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    background-color: var(--background-color);
+    padding: 2rem;
+}
+
 #heading {
     font-family: "Sarala", sans-serif;
     font-size: 3rem;
     font-weight: 800;
     color: var(--primary-color);
     text-align: center;
+}
+
+#heading i {
+    padding-right: 1rem;
+}
+#details span {
+    font-weight: bold;
+}
+
+#email {
+    cursor: pointer;
+}
+
+#email:hover {
+    text-decoration: underline;
+}
+
+.status-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+    padding: 2rem 6rem;
+}
+
+.status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 5rem;
+    border-bottom: 2px solid black;
+}
+
+.status-name {
+    font-family: "Arimo", sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+
+.books-container {
+    grid-template-columns: repeat(auto, 1fr);
+    justify-items: center;
+    padding: 2rem 6rem;
+}
+
+.book {
+    height: fit-content;
+    padding-bottom: 2rem;
 }

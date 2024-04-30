@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="{{url_for('static', filename='js/index.js')}}" defer></script>
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/profile.css')}}">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
     <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='assets/logo.ico')}}">
     <title>@{{user.username}} | E-Pustakalya</title>
@@ -25,9 +26,9 @@
         <nav>
             <div>
                 <span id="user"><a href="{{ url_for('profile') }}">
-                    <i class="uil uil-user-circle"></i>
-                    <span>{{ user.username }}</span>
-                </a></span>
+                        <i class="uil uil-user-circle"></i>
+                        <span>{{ user.username }}</span>
+                    </a></span>
                 <button id="nav-btn">
                     <span id="nav-line-1"></span>
                     <span id="nav-line-2"></span>
@@ -54,29 +55,58 @@
         {% endif %}
     </header>
     <main>
-        <h1>@{{user.username}}'s Profile</h1>
-        <p>{{user.name}}</p>
-
-        <h2>Books Read</h2>
-        <ul>
-            {% for book in books %}
-            <li>
-                {% if book["status"] == "returned" %}
-                <h3>{{book["title"]}}</h3>
-                <p>Author: {{book["author"]}}</p>
-                <p>Section: {{book["section"]}}</p>
-                {% if book.filetype == "pdf" %}
-                {% set thumbnail = book.filename ~ ".jpg"%}
-                {% else %}
-                {% set thumbnail = "epub.jpg"%}
-                {% endif %}
-                <figure>
-                    <img src="{{ url_for('static', filename='thumbnails/' ~ thumbnail) }}" alt="">
-                </figure>
-                <p>Filetype: {{book["filetype"]}}</p>
-                {% endif %}
-                <button><a href="/book/{{book['book_id']}}">View book</a></button>
+        <div class="container">
+            <div id="details">
+                <h2 id="heading"><i class="uil uil-user-circle"></i>{{user.username}}'s Profile</h2>
+                <p id="userkaname"><span>Name:</span> {{user.name}}</p>
+                <p><span>Email:</span> <a href="mailto:{{user.email}}" id="email">{{user.email}}</a></p>
+            </div>
+        </div>
+        <ul class="status-container">
+            {% for status in books_status %}
+            {% set books = books_status[status] %}
+            {% if books %}
+            <li class="status">
+                <h2 class="status-name">{{status|title}}</h2>
+                <ul class="books-container" id="{% if books|length==1 %}one-book{% endif %}">
+                    {% for book in books %}
+                    <li class="book"><a href="/book/{{book.book_id}}">
+                            {% if book.filetype == "pdf" %}
+                            {% set thumbnail = book.filename ~ ".jpg"%}
+                            {% else %}
+                            {% set thumbnail = "epub.jpg"%}
+                            {% endif %}
+                            <figure class="thumbnail">
+                                <img src="{{ url_for('static', filename='thumbnails/' ~ thumbnail) }}" alt="">
+                            </figure>
+                            <div class="book-info">
+                                <h3 class="book-name">{{book["title"]}}</h3>
+                                <p class="author">~ {{book["author"]}}</p>
+                                <p class="section"><i class="uil uil-inbox"></i> {{book["section"]}}</p>
+                                <p class="filetype"><i class="uil uil-bookmark"></i> {{book["filetype"]}}</p>
+                                {% if book["status"] == "bought" %}
+                                <p>Purchased on: {{book["issued_at"]}}</p>
+                                {% else %}
+                                <p>Issued on: {{book["issued_at"]}}</p>
+                                {% if book["status"] in ("issued", "overdue") %}
+                                <p>Tenure: {{book["tenure"]}} days</p>
+                                {% elif book["status"] == "returned" %}
+                                <p>Returned on: {{book["returned_at"]}}</p>
+                                <p><i class="uil uil-star"></i> {{book["rating"]}}</p>
+                                {% if book["review"] %}
+                                <p><i class="uil uil-pen"></i> "<em>{{book["review"]}}</em>"</p>
+                                {% endif %}
+                                {% else %}
+                                <p>Approval Pending for Issuance</p>
+                                {% endif %}
+                                {% endif %}
+                                <button>Read Book</button>
+                            </div>
+                        </a></li>
+                    {% endfor %}
+                </ul>
             </li>
+            {% endif %}
             {% endfor %}
         </ul>
     </main>
