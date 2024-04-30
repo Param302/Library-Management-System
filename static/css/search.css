@@ -1,0 +1,50 @@
+@import url("books.css");
+
+main {
+    display: flex;
+    flex-direction: column;
+    padding-left: 12rem;
+    padding-right: 12rem;
+}
+
+main li {
+    list-style: none;
+}
+
+#no-result {
+    font-family: "Arimo", sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--error-color);
+    text-align: center;
+    padding: 5rem;
+}
+
+.sections-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+    padding: 2rem 6rem;
+}
+
+.sections {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 5rem;
+    border-bottom: 2px solid black;
+}
+
+.section-name {
+    font-family: "Arimo", sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+.books-container {
+    grid-template-columns: repeat(auto, 1fr);
+    justify-items: center;
+    padding: 2rem 6rem;
+}

@@ -130,7 +130,12 @@ def user_routes(app, db, bcrypt):
     @role_required("user")
     def dashboard():
         books = get_user_books(current_user.user_id)
-        return render_template("dashboard.html", user=current_user, books=books)
+
+        books_status = {"issued": [], "bought": [], "returned": [], "pending": []}
+        for b in books:
+            books_status[b["status"]].append(b)
+
+        return render_template("dashboard.html", user=current_user, books_status=books_status)
 
     @app.route('/book/<int:book_id>')
     def book(book_id):

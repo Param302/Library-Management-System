@@ -65,7 +65,7 @@ def get_book_details_for_user(user_id, book_id):
     details = book_details.copy()
     for t in trans:
         if t.book_id == book_id and t.status != "returned":
-            details["issued_at"] = t.issued_at
+            details["issued_at"] = t.issued_at.strftime("%d %b'%y")
             details["tenure"] = t.tenure
             details["status"] = t.status
             break
@@ -75,13 +75,13 @@ def get_book_details_for_user(user_id, book_id):
 
 
 def get_user_transactions(user_id):
-    return [t for t in get_transactions() if t.user_id == user_id and t.status != "bought"]
+    return [t for t in get_transactions() if t.user_id == user_id]
 
 def get_user_feedbacks(user_id):
     feedbacks = {}
     i = 0
     for t in get_user_transactions(user_id):
-        if t.user_id == user_id and t.status == "returned":
+        if t.user_id == user_id and t.status in ("returned", "bought"):
             feedback = Feedback.query.filter_by(transaction_id=t.tid).first()
             if feedback:
                 book = Book.query.filter_by(book_id=t.book_id).first()
@@ -91,7 +91,7 @@ def get_user_feedbacks(user_id):
                     "author": author,
                     "review": feedback.review,
                     "rating": feedback.rating,
-                    "issued": t.issued_at,
+                    "issued": str(t.issued_at.strftime("%d %b'%y")),
                 }
                 i += 1
     
@@ -104,12 +104,16 @@ def get_user_books(user_id):
     books = []
     for t in trans:
         book = books_data[t.book_id].copy()
-        book["issued_at"] = t.issued_at
+        book["issued_at"] = t.issued_at.strftime("%d %b'%y")
         book["tenure"] = t.tenure
         book["status"] = t.status
-        if t.status == "returned":
-            book["returned_at"] = t.returned_at
-            if feedbacks[t.book_id]:
+        if t.status in ("returned", "bought"):
+            if t.status == "returned":
+                if t.returned_at is not None:
+                    book["returned_at"] = t.returned_at.strftime("%d %b'%y")
+                else:
+                    book["returned_at"] = (t.issued_at + timedelta(days=6)).strftime("%d %b'%y")
+            if t.book_id in feedbacks:
                 book["review"] = feedbacks[t.book_id]["review"]
                 book["rating"] = feedbacks[t.book_id]["rating"]
         books.append(book)

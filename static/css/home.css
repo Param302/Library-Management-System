@@ -1,0 +1,42 @@
+@import url("books.css");
+
+main {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 5rem;
+    background-color: var(--offwhite-color);
+}
+
+#sections {
+    border-right: 2px solid var(--text-color);
+    font-family: "Sarala", sans-serif;
+    color: var(--primary-color);
+    width: 350px;
+    position: relative;
+}
+
+#sections div {
+    padding: 0 3.7rem;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#sections ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    font-family: inherit;
+}
+#sections ul li {
+    list-style: none;
+    margin-left: 2rem;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+#sections ul li:hover {
+    text-decoration: underline;
+}

@@ -4,7 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{{url_for('static', filename='js/index.js')}}" defer></script>
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/dashboard.css')}}">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
     <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='assets/logo.ico')}}">
     <title>{{user.username}}'s Dashboard | E-Pustakalya</title>
 </head>
@@ -15,48 +18,80 @@
                 <img src="{{url_for('static', filename='assets/circle-logo.png')}}" alt="logo">
                 <h1>E-Pustakalya</h1>
             </a></div>
-        {% if user %}
-        <a href="{{ url_for('index')}}">Home</a>
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('profile') }}">Profile</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-        {% else %}
-        <h1>Welcome, Guest</h1>
-        <a href="{{ url_for('login') }}">Sign in</a>
-        <a href="{{ url_for('register') }}">Sign Up</a>
-        {% endif %}
-        <form action="/search">
+        <form action="/search" id="search-form">
             <input type="text" name="q" id="query" placeholder="Type any Book or Author" value="{{query}}">
-            <button type="submit">Search</button>
+            <button type="submit" id="search-button"><i class="uil uil-search"></i></button>
         </form>
+        {% if user %}
+        <nav>
+            <div>
+                <span id="user"><a href="{{ url_for('profile') }}">
+                        <i class="uil uil-user-circle"></i>
+                        <span>{{ user.username }}</span>
+                    </a></span>
+                <button id="nav-btn">
+                    <span id="nav-line-1"></span>
+                    <span id="nav-line-2"></span>
+                    <span id="nav-line-3"></span>
+                </button>
+            </div>
+            <ul id="nav-menu" class="nav-close">
+                <li><a href="{{ url_for('index')}}">Home</a></li>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+        {% else %}
+        <button id="login-btn"><a href="{{ url_for('login') }}">Login</a></button>
+        {% endif %}
     </header>
     <main>
-        <h1>{{user.username}}'s Dashboard</h1>
-        <h2>Books</h2>
-        <ul>
-            {% for book in books %}
-            <li>
-                <h3>{{book["title"]}}</h3>
-                <p>Author: {{book["author"]}}</p>
-                <p>Section: {{book["section"]}}</p>
-                {% set thumbnail = book.filename ~ ".jpg"%}
-                <figure>
-                    <img src="{{ url_for('static', filename='thumbnails/' ~ thumbnail) }}" alt="">
-                </figure>
-                <p>Filetype: {{book["filetype"]}}</p>
-                <p>Issued on: {{book["issued_at"]}}</p>
-                {% if book["status"] in ("issued", "overdue") %}
-                <p>Tenure: {{book["tenure"]}}</p>
-                {% elif book["status"] == "returned" %}
-                <p>Returned on {{book["returned_at"]}}</p>
-                <p>Rating: {{book["rating"]}} out of 5</p>
-                {% if book["review"] %}
-                <p>Your review: "<em>{{book["review"]}}</em>"</p>
+        <h1 id="dash-heading">My Dashboard</h1>
+        <ul class="status-container">
+            {% for status in books_status %}
+            <li class="status">
+                {% set books = books_status[status] %}
+                {% if books %}
+                <h2 class="status-name">{{status|title}}</h2>
+                <ul class="books-container" id="{% if books|length==1 %}one-book{% endif %}">
+                    {% for book in books %}
+                    <li class="book"><a href="/book/{{book.book_id}}">
+                            {% if book.filetype == "pdf" %}
+                            {% set thumbnail = book.filename ~ ".jpg"%}
+                            {% else %}
+                            {% set thumbnail = "epub.jpg"%}
+                            {% endif %}
+                            <figure class="thumbnail">
+                                <img src="{{ url_for('static', filename='thumbnails/' ~ thumbnail) }}" alt="">
+                            </figure>
+                            <div class="book-info">
+                                <h3 class="book-name">{{book["title"]}}</h3>
+                                <p class="author">~ {{book["author"]}}</p>
+                                <p class="section"><i class="uil uil-inbox"></i> {{book["section"]}}</p>
+                                <p class="filetype"><i class="uil uil-bookmark"></i> {{book["filetype"]}}</p>
+                                {% if book["status"] == "bought" %}
+                                <p>Purchased on: {{book["issued_at"]}}</p>
+                                {% else %}
+                                    <p>Issued on: {{book["issued_at"]}}</p>
+                                    {% if book["status"] in ("issued", "overdue") %}
+                                    <p>Tenure: {{book["tenure"]}} days</p>
+                                    {% elif book["status"] == "returned" %}
+                                    <p>Returned on: {{book["returned_at"]}}</p>
+                                    <p><i class="uil uil-star"></i> {{book["rating"]}}</p>
+                                    {% if book["review"] %}
+                                    <p><i class="uil uil-pen"></i> "<em>{{book["review"]}}</em>"</p>
+                                    {% endif %}
+                                    {% else %}
+                                    <p>Approval Pending for Issuance</p>
+                                    {% endif %}
+                                {% endif %}
+                                <button>Read Book</button>
+                            </div>
+                        </a></li>
+                    {% endfor %}
+                </ul>
                 {% endif %}
-                {% else %}
-                <p>Approval Pending for Issuance</p>
-                {% endif %}
-                <button><a href="/book/{{book['book_id']}}">View book</a></button>
             </li>
             {% endfor %}
         </ul>

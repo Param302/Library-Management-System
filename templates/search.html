@@ -4,7 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{{url_for('static', filename='js/index.js')}}" defer></script>
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/search.css')}}">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
     <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='assets/logo.ico')}}">
     <title>{{query}} - Search Results | E-Pustakalya</title>
 </head>
@@ -12,20 +15,20 @@
 <body>
     <header>
         <div id="name"><a href="/">
-            <img src="{{url_for('static', filename='assets/circle-logo.png')}}" alt="logo">
-            <h1>E-Pustakalya</h1>
-        </a></div>
+                <img src="{{url_for('static', filename='assets/circle-logo.png')}}" alt="logo">
+                <h1>E-Pustakalya</h1>
+            </a></div>
         <form action="/search" id="search-form">
             <input type="text" name="q" id="query" placeholder="Type any Book or Author" value="{{query|title}}">
-            <button type="submit" id="search-button">🔍</button>
+            <button type="submit" id="search-button"><i class="uil uil-search"></i></button>
         </form>
         {% if user %}
         <nav>
             <div>
-                <span id="user">
-                    <img src="" alt="av">
+                <span id="user"><a href="{{ url_for('profile') }}">
+                    <i class="uil uil-user-circle"></i>
                     <span>{{ user.username }}</span>
-                </span>
+                </a></span>
                 <button id="nav-btn">
                     <span id="nav-line-1"></span>
                     <span id="nav-line-2"></span>
@@ -53,20 +56,34 @@
     </header>
     <main>
         {% if not result %}
-        <p>No results found for "{{query}}"</p>
+        <p id="no-result">No results found for "{{query|title}}"</p>
         {% else %}
-        <h2>Search Results:</h2>
-        <ul>
+        <ul class="sections-container">
             {% for section in result %}
             {% set books = result[section] %}
-            <li>
-                <h3>{{section}}</h3>
-                {% for book in books %}
-                <h4>{{book.title}}</h4>
-                <p>Author: {{book.author}}</p>
-                <p>Filetype: {{book.filetype}}</p>
-                <button><a href="/book/{{book.book_id}}">View Book</a></button>
-                {% endfor %}
+            <li class="sections">
+                <h2 class="section-name">{{section}}</h2>
+                <ul class="books-container" id="{% if books|length==1 %}one-book{% endif %}">
+                    {% for book in books %}
+                    <li class="book"><a href="/book/{{book.book_id}}">
+                            {% if book.filetype == "pdf" %}
+                            {% set thumbnail = book.filename ~ ".jpg"%}
+                            {% else %}
+                            {% set thumbnail = "epub.jpg"%}
+                            {% endif %}
+                            <figure class="thumbnail">
+                                <img src="{{ url_for('static', filename='thumbnails/' ~ thumbnail) }}" alt="">
+                            </figure>
+                            <div class="book-info">
+                                <h4 class="book-name">{{book["title"]}}</h4>
+                                <p class="author">~ {{book["author"]}}</p>
+                                <p class="section"><i class="uil uil-inbox"></i> {{book["section"]}}</p>
+                                <p class="filetype"><i class="uil uil-bookmark"></i> {{book["filetype"]}}</p>
+                                <button>Read Book</button>
+                            </div>
+                        </a></li>
+                    {% endfor %}
+                </ul>
             </li>
             {% endfor %}
         </ul>

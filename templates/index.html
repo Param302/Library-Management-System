@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="{{url_for('static', filename='js/index.js')}}" defer></script>
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/home.css')}}">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
     <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='assets/logo.ico')}}">
     <title>E-Pustakalya</title>
 </head>
@@ -18,15 +20,15 @@
             </a></div>
         <form action="/search" id="search-form">
             <input type="text" name="q" id="query" placeholder="Type any Book or Author" value="{{query}}">
-            <button type="submit" id="search-button">🔍</button>
+            <button type="submit" id="search-button"><i class="uil uil-search"></i></button>
         </form>
         {% if user %}
         <nav>
             <div>
-                <span id="user">
-                    <img src="" alt="av">
+                <span id="user"><a href="{{ url_for('profile') }}">
+                    <i class="uil uil-user-circle"></i>
                     <span>{{ user.username }}</span>
-                </span>
+                </a></span>
                 <button id="nav-btn">
                     <span id="nav-line-1"></span>
                     <span id="nav-line-2"></span>
@@ -53,32 +55,36 @@
         {% endif %}
     </header>
     <main>
-        <div class="sections">
-            <h2>Sections</h2>
-            <ul>
-                {% for section in sections %}
-                <li><a href="/search?q={{section.name}}">{{section.name}}</a></li>
-                {% endfor %}
-            </ul>
+        <div id="sections">
+            <div>
+                <h2><i class="uil uil-inbox"></i> Sections</h2>
+                <ul>
+                    {% for section in sections %}
+                    <li><a href="/search?q={{section.name}}">{{section.name}}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
-        <ul>
+        <ul class="books-container">
             {% for book_id in books %}
             {% set book = books[book_id] %}
-            <li class="books">
-                <h3>{{book["title"]}}</h3>
-                <p>Author: {{book["author"]}}</p>
-                <p>Section: {{book["section"]}}</p>
-                {% if book.filetype == "pdf" %}
+            <li class="book"><a href="/book/{{book_id}}">
+                    {% if book.filetype == "pdf" %}
                     {% set thumbnail = book.filename ~ ".jpg"%}
-                {% else %}
+                    {% else %}
                     {% set thumbnail = "epub.jpg"%}
-                {% endif %}
-                <figure>
-                    <img src="{{ url_for('static', filename='thumbnails/' ~ thumbnail) }}" alt="">
-                </figure>
-                <p>Filetype: {{book["filetype"]}}</p>
-                <button><a href="/book/{{book_id}}">View Book</a></button>
-            </li>
+                    {% endif %}
+                    <figure class="thumbnail">
+                        <img src="{{ url_for('static', filename='thumbnails/' ~ thumbnail) }}" alt="">
+                    </figure>
+                    <div class="book-info">
+                        <h3 class="book-name">{{book["title"]}}</h3>
+                        <p class="author">~ {{book["author"]}}</p>
+                        <p class="section"><i class="uil uil-inbox"></i> {{book["section"]}}</p>
+                        <p class="filetype"><i class="uil uil-bookmark"></i> {{book["filetype"]}}</p>
+                        <button>Read Book</button>
+                    </div>
+                </a></li>
             {% endfor %}
         </ul>
     </main>

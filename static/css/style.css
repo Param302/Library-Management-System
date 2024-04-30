@@ -12,9 +12,10 @@
     --primary-color: #002e9a; /* Dark blue */
     --secondary-color: #ffc900; /* Yellow */
     --accent-color: #0666dd; /* Royal blue */
+    --accent-color-2: #add8e6; /* Light blue */
     --highlight-color: #e98300; /* Orange */
     --background-color: #efebde; /* Light beige */
-  
+
     --success-color: #4caf50; /* Modern green */
     --error-color: #f44336; /* Modern red */
     --text-color: #333333; /* Greyish black */
@@ -28,7 +29,8 @@ a {
     all:unset;
 }
 main {
-    padding-top: 8rem;
+    padding-top: 10rem;
+    padding-bottom: 5rem;
 }
 
 button {
@@ -45,7 +47,7 @@ button a {
 }
 
 header {
-    background-color: var(--accent-color);
+    background-color: var(--primary-color);
     width: 100%;
     padding: 2rem 4rem 2rem 8rem;
     color: var(--offwhite-color);
@@ -84,10 +86,11 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--background-color);
+    background-color: var(--offwhite-color);
     border-radius: 10px;
     margin-right: 7.7vw;
     padding: 5px 10px 5px 20px;
+    height: 50px;
 }
 
 #search-form:hover {
@@ -110,6 +113,13 @@ header {
     padding: 8px;
     border-radius: 0 5px 5px 0;
     cursor: pointer;
+    height: 100%;
+}
+
+#search-button i {
+    position: relative;
+    top: -2px;
+    font-size: 1.5rem;
 }
 
 #search-button:hover {
@@ -127,6 +137,26 @@ nav div {
     align-items: center;
     gap: 50px;
 }
+
+#user {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+#user:hover {
+    color: var(--highlight-color);
+}
+
+#user a {
+    all: inherit;
+}
+
+#user i {
+    font-size: 2rem;
+}
+
 
 #nav-btn {
     width: 35px;
@@ -150,7 +180,7 @@ nav div {
 }
 
 #nav-menu {
-    background-color: var(--accent-color);
+    background-color: var(--primary-color);
     position: fixed;
     right: 0;
     bottom: 0;
@@ -166,7 +196,7 @@ nav div {
     color: var(--offwhite-color);
     list-style: none;
     border: 2px solid transparent;
-    border-bottom-color: black;
+    border-bottom-color: var(--background-color);
     width: 100%;
     text-align: center;
     padding: 3rem 0;
@@ -212,12 +242,14 @@ nav div {
     border-radius: 5px;
     width: 100px;
     height: 40px;
+    font-family: "Arimo", sans-serif;
     font-size: 1rem;
-    font-weight: 300;
+    font-weight: 600;
 }
 
 #login-btn:hover {
-    background-color: var(--primary-color);
+    background-color: var(--highlight-color);
+    color: var(--text-color);
 }
 #login-btn:active {
     transform: scale(0.9);
