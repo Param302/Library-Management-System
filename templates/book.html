@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="{{url_for('static', filename='js/index.js')}}" defer></script>
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/books.css')}}">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
     <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='assets/logo.ico')}}">
     <title>{{book.title}} | E-Pustakalya</title>
@@ -18,18 +19,65 @@
                 <img src="{{url_for('static', filename='assets/circle-logo.png')}}" alt="logo">
                 <h1>E-Pustakalya</h1>
             </a></div>
+        <form action="/search" id="search-form">
+            <input type="text" name="q" id="query" placeholder="Type any Book or Author" value="{{query}}">
+            <button type="submit" id="search-button"><i class="uil uil-search"></i></button>
+        </form>
+        {% if user %}
+        <nav>
+            <div>
+                <span id="user"><a href="{{ url_for('profile') }}">
+                    <i class="uil uil-user-circle"></i>
+                    <span>{{ user.username }}</span>
+                </a></span>
+                <button id="nav-btn">
+                    <span id="nav-line-1"></span>
+                    <span id="nav-line-2"></span>
+                    <span id="nav-line-3"></span>
+                </button>
+            </div>
+            <ul id="nav-menu" class="nav-close">
+                <li><a href="{{ url_for('index')}}">Home</a></li>
+
+                {% if user.role == "admin" %}
+                <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('book_status')}}">Books Status</a></li>
+                <li><a href="{{ url_for('all_sections')}}">Sections</a></li>
+                <li><a href="{{ url_for('all_users')}}">Users</a></li>
+                {% else %}
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+        {% else %}
+        <button id="login-btn"><a href="{{ url_for('login') }}">Login</a></button>
+        {% endif %}
     </header>
     <main>
-        <h1>{{book.title}}</h1>
-        <p>Author: {{book.author}}</p>
-        <p>Section: {{book.section}}</p>
-        <p>Filetype: {{book.filetype}}</p>
+        <h1 id="heading">{{book.title}}</h1>
+        <div class="book">
+            {% if book.filetype == "pdf" %}
+            {% set thumbnail = book.filename ~ ".jpg"%}
+            {% else %}
+            {% set thumbnail = "epub.jpg"%}
+            {% endif %}
+            <figure class="thumbnail">
+                <img src="{{ url_for('static', filename='thumbnails/' ~ thumbnail) }}" alt="">
+            </figure>
+            <p>Filetype: {{book.filetype}}</p>
+            <p>Author: {{book.author}}</p>
+            <p>Section: {{book.section}}</p>
         {% if not user.is_authenticated %}
+        <div class="buttons">
         <button onclick="showNotLoginText()">Read</button>
         <button onclick="showNotLoginText()">Buy</button>
+        </div>
         <p id="not-login-text" style="display:none;">Please <a href="{{url_for('login')}}">login</a> to read or buy the
             book.</p>
         {% elif not book.status %}
+        <div class="buttons">
         <form action="/book/{{book.book_id}}/issue" method="POST">
             <select name="days" id="days">
                 <option value="1">1</option>
@@ -55,9 +103,11 @@
             <br>
             <button type="submit" onclick="showAfterBuying()">Purchase Book</button>
         </form>
+        </div>
         {% elif book.status == "issued" or book.status == "overdue" %}
         <p>Issued on: {{book.issued_at}}</p>
         <p>Tenure: {{book.tenure}} days</p>
+        <div class="buttons">
         <a href="">Read book</a> <!-- !should work for admin -->
         <button onclick="toggleFeedbackForm()">Return</button>
         <form action="/book/{{book.book_id}}/review" method="POST" id="feedback-form" style="display:none;">
@@ -74,6 +124,7 @@
             <input type="hidden" name="status" value="{{status}}">
             <button type="submit">Return book</button>
         </form>
+        </div>
         {% elif book.status == "bought" %}
         <h4>You've purchased the book!</h4>
         <p>
@@ -94,14 +145,13 @@
             <button type="submit">Submit</button>
         </form>
         </p>
-        {% block content %}
         <button><a href="">Read</a></button>
         or
         <a href="/book/{{book.book_id}}/download/{{download_link}}">Download</a> the book.
-        {% endblock %}
         {% else %}
         <p>Status: {{book.status}}</p>
         {% endif %}
+    </div>
     </main>
 </body>
 <script>
