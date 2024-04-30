@@ -141,8 +141,8 @@ def user_routes(app, db, bcrypt):
         if current_user.is_authenticated and current_user.role == "user":
             book = get_book_details_for_user(current_user.user_id, book_id)
         
-        if (download_link:=get_book_download_code(current_user.user_id, book_id)):
-            return render_template("book.html", book=book, user=current_user, download_link=download_link)
+            if (download_link:=get_book_download_code(current_user.user_id, book_id)):
+                return render_template("book.html", book=book, user=current_user, download_link=download_link)
 
         return render_template("book.html", book=book, user=current_user)
 

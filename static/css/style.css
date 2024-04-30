@@ -27,6 +27,19 @@ main {
     padding-top: 8rem;
 }
 
+button {
+    cursor: pointer;
+}
+
+button a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+}
+
 header {
     background-color: var(--accent-color);
     width: 100%;
@@ -34,6 +47,7 @@ header {
     color: var(--offwhite-color);
     font-weight: 600;
     position: fixed;
+    z-index: 1000;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -45,12 +59,21 @@ header {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    font-size: 1rem;
+}
+
+#name a {
+    all:inherit;
+    cursor: pointer;
 }
 
 #name img {
     width: 50px;
     height: 50px;
+}
+
+#name h1 {
+    font-size: 1.7rem;
+    font-weight: normal;
 }
 
 #search-form {
@@ -73,6 +96,7 @@ header {
     font-family: "Baloo", sans-serif;
     background-color: transparent;
     outline: none;
+    font-size: 1rem;
 }
 
 #search-button {
@@ -115,7 +139,7 @@ nav div {
 
 #nav-btn span {
     width: 100%;
-    height: 3px;
+    height: 4px;
     background-color: var(--background-color);
     border-radius: 5px;
 }
@@ -127,7 +151,7 @@ nav div {
     bottom: 0;
     width: 17vw;
     height: calc(100vh - 7.3rem);
-    display: flex;
+    /* display: none; */
     flex-direction: column;
     align-items: center;
     font-size: 1.5rem;
@@ -147,4 +171,45 @@ nav div {
     background-color: var(--background-color);
     color: var(--primary-color);
     cursor: pointer;
+}
+
+.nav-close {
+    display: none;
+}
+
+.nav-open {
+    display: flex;
+}
+
+#nav-line-2 {
+    transition: none;
+}
+
+.rotate-line1 {
+    transform: rotateZ(45deg) translateY(-5px);
+    transform-origin: 0 0;
+}
+
+.rotate-line2 {
+    transform: rotateZ(-45deg) translateY(1px);
+    transform-origin: 0 0;
+}
+
+#login-btn {
+    background-color: transparent;
+    color: var(--offwhite-color);
+    border: 1px solid var(--offwhite-color);
+    border-radius: 5px;
+    width: 100px;
+    height: 40px;
+    font-size: 1rem;
+    font-weight: 300;
+}
+
+#login-btn:hover {
+    background-color: var(--primary-color);
+}
+#login-btn:active {
+    transform: scale(0.9);
+    transition-duration: 100ms;
 }
