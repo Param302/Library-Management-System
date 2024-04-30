@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="{{url_for('static', filename='js/index.js')}}" defer></script>
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/all_sections.css')}}">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
     <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='assets/logo.ico')}}">
     <title>Sections | E-Pustakalya</title>
@@ -48,31 +49,41 @@
         {% endif %}
     </header>
     <main>
-        <h1>Sections</h1>
-        <ul>
+        <h1 id="heading">Sections</h1>
+        <ul id="sections-container">
             {% for section in sections %}
-            <li>
+            <li class="section">
                 <h3>{{section.name}}</h3>
-                <p>{{section.description}}</p>
-                <p><a href="/section/{{section.section_id}}">See Books</a></p>
-                <p><a href="/section/{{section.section_id}}#addbook">+ Add book</a></p>
-                <form action="/sections" method="POST">
-                    <input type="hidden" name="section_id" value="{{section.section_id}}">
-                    <button>Delete Section</button>
-                </form>
+                <p class="des">{{section.description}}</p>
+                <p class="sec-books"><a href="/section/{{section.section_id}}">See Books</a></p>
+                <div class="buttons">
+                    <button><a href="/section/{{section.section_id}}#addbook"><i class="uil uil-book-medical"></i></a></button>
+                    <form action="/sections" method="POST">
+                        <input type="hidden" name="section_id" value="{{section.section_id}}">
+                        <button><i class="uil uil-trash-alt"></i></button>
+                    </form>
+                </div>
             </li>
             {% endfor %}
+            <button class="section" id="add-sec"><i class="uil uil-create-dashboard"></i></button>
         </ul>
         {% if code %}
         <h3>Code: {{ code }}</h3>
         {% endif %}
-        <form action="/sections" method="POST">
-            <label for="name">Name</label>
-            <input type="text" name="name" id="name">
-            <label for="description">Description</label>
-            <textarea name="description" id="description" cols="50" rows="8"></textarea>
-            <button type="submit">Add Section</button>
-        </form>
+        <div id="form-area">
+            <h3>Add Section</h3>
+            <form action="/sections" method="POST" id="sec-form">
+                <label for="sec-name">
+                    <span>Name</span>
+                    <input type="text" name="name" id="sec-name">
+                </label>
+                <label for="description">
+                    <span>Description</span>
+                    <textarea name="description" id="description" cols="30" rows="3"></textarea>
+                </label>
+                <button type="submit">Add Section</button>
+            </form>
+        </div>
     </main>
 </body>
 

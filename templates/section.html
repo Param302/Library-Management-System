@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="{{url_for('static', filename='js/index.js')}}" defer></script>
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/section.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/books.css')}}">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
     <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='assets/logo.ico')}}">
     <title>{{section.name}} Section | E-Pustakalya</title>
@@ -25,9 +27,9 @@
         <nav>
             <div>
                 <span id="user"><a href="{{ url_for('profile') }}">
-                    <i class="uil uil-user-circle"></i>
-                    <span>{{ admin.username }}</span>
-                </a></span>
+                        <i class="uil uil-user-circle"></i>
+                        <span>{{ admin.username }}</span>
+                    </a></span>
                 <button id="nav-btn">
                     <span id="nav-line-1"></span>
                     <span id="nav-line-2"></span>
@@ -48,33 +50,55 @@
         {% endif %}
     </header>
     <main>
-        <h1>{{section.name}}</h1>
-        <p><em>{{section.description}}</em></p>
-        <ul>
+        <h1 id="heading">{{section.name}}</h1>
+        <p id="description"><em>{{section.description}}</em></p>
+        <ul class="books-container">
             {% for book in books %}
-            <li>
-                <h3>{{book.title}}</h3>
-                <p>{{book.author}}</p>
-                <p>Filetype: {{book.filetype}}</p>
-                <button>Read book</button>
-                <form action="/section/{{section.section_id}}" method="POST">
-                    <input type="hidden" name="book_id" value="{{book.book_id}}">
-                    <button>Delete Book</button>
-                </form>
+            <li class="book">
+                {% if book.filetype == "pdf" %}
+                {% set thumbnail = book.filename ~ ".jpg"%}
+                {% else %}
+                {% set thumbnail = "epub.jpg"%}
+                {% endif %}
+                <figure class="thumbnail">
+                    <img src="{{ url_for('static', filename='thumbnails/' ~ thumbnail) }}" alt="">
+                </figure>
+                <div class="book-info">
+                    <h3 class="book-name">{{book["title"]}}</h3>
+                    <p class="author">~ {{book["author"]}}</p>
+                    <p class="filetype"><i class="uil uil-bookmark"></i> {{book["filetype"]}}</p>
+                    <div class="buttons">
+                        <button><a href="/book/{{book.book_id}}">View</a></button>
+                        <form action="/section/{{section.section_id}}" method="POST">
+                            <input type="hidden" name="book_id" value="{{book.book_id}}">
+                            <button><i class="uil uil-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
             </li>
             {% endfor %}
+            <button class="book" id="add-book"><i class="uil uil-folder-plus"></i></button>
         </ul>
-        <h2>File Upload</h2>
-        {{file_code}}
-        <form action="/section/{{section.section_id}}" id="addbook" method="POST" enctype="multipart/form-data">
-            <label for="title">Title</label>
-            <input type="text" name="title" id="title" required>
-            <label for="author">Author</label>
-            <input type="text" name="author" id="author" required>
-            <input type="file" name="file" id="file" accept="application/pdf, 	application/epub+zip" required
-                onchange="setTitle()">
-            <button type="submit">Add Book</button>
-        </form>
+        <div id="form-area">
+            <h3>File Upload</h3>
+            {{file_code}}
+            <form action="/section/{{section.section_id}}" id="addbook" method="POST" enctype="multipart/form-data">
+                <label for="title">
+                    <span>Title</span>
+                    <input type="text" name="title" id="title" required>
+                </label> <br>
+                <label for="author">
+                    <span>Author</span>
+                    <input type="text" name="author" id="author" required>
+                </label> <br>
+                <label for="file">
+                    <span><i class="uil uil-file-plus"></i></span>
+                    <input type="file" name="file" id="file" accept="application/pdf, 	application/epub+zip" required
+                        onchange="setTitle()">
+                </label> <br>
+                <button type="submit">Add Book</button>
+            </form>
+        </div>
     </main>
 </body>
 <script>

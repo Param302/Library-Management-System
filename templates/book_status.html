@@ -67,7 +67,7 @@
                 Returned Books
                 {% endif %}
             </h2>
-            <ul class="trans-headings">
+            <ul class="trans-headings" id="{% if status=='bought' %}purchased{% endif %}">
                 <li class="sno">S.No.</li>
                 <li>Username</li>
                 <li>Title</li>
@@ -85,6 +85,7 @@
                 </li>
                 {% if status == "returned" %}
                 <li>Returned on</li>
+                {% elif status == "bought" %}
                 {% else %}
                 <li>Actions</li>
                 {% endif %}
@@ -92,7 +93,7 @@
             <ul class="transactions">
                 {% for t in trans %}
                 <li>
-                    <ul class="trans-details">
+                    <ul class="trans-details" id="{% if status=='bought' %}purchased{% endif %}">
                         <li class="sno"> {{loop.index}}</li>
                         <li class="username"><a href="/u/@{{t.username}}">{{t.username}}</a></li>
                         <li>{{t.title}}</li>
@@ -107,21 +108,24 @@
                             {{t.issued_at}}
                             {% endif %}
                         </li>
+                        {% if t.status == "pending" %}
                         <li>
-                            {% if t.status == "pending" %}
                             <form action="/book_status" method="POST">
                                 <input type="hidden" name="trans_id" id="trans_id" value="{{t.trans_id}}">
                                 <input type="hidden" name="status" value="issued">
                                 <button type="submit" class="issue-btn" >Issue</button>
                             </form>
-                            {% elif t.status == "issued" or t.status == "overdue" %}
+                        </li>
+                        {% elif t.status == "issued" or t.status == "overdue" %}
+                        <li>
                             <form action="/book_status" method="POST">
                                 <input type="hidden" name="trans_id" id="trans_id" value="{{t.trans_id}}">
                                 <input type="hidden" name="status" value="returned">
                                 <button type="submit" class="revoke-btn">Revoke</button>
                             </form>
-                            {% endif %}
                         </li>
+                        {% else %}
+                        {% endif %}
                     </ul>
                 </li>
                 {% endfor %}

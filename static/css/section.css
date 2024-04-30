@@ -1,0 +1,137 @@
+@import url("books.css");
+
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+
+#heading {
+    font-family: "Sarala", sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+#description {
+    font-family: "Arimo", sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.buttons {
+    display: flex;
+    gap: 2rem;
+}
+
+.buttons button, .buttons button {
+    font-size: 1.5rem !important;
+}
+
+#add-book {
+    background-color: var(--highlight-color);
+    font-size: 5rem;
+    transform: scale(0.5);
+    transition-duration: 100ms;
+    border: none;
+    border-radius: 20px;
+}
+
+#add-book:hover {
+    transform: scale(0.55);
+    transition-duration: 100ms;
+}
+#add-book:active {
+    transform: scale(0.5);
+    transition-duration: 100ms;
+}
+
+
+#form-area {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--offwhite-color);
+    padding: 2rem;
+    margin-top: 3rem;
+}
+
+#form-area h3 {
+    font-family: "Sarala", sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+#addbook {
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    gap: 1rem;
+    font-size: 1.5rem;
+    font-family: "Arimo", sans-serif;
+    margin-top: 2rem;
+}
+
+#addbook label {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    align-items: center;
+}
+
+#addbook span {
+    color: var(--accent-color);
+    font-weight: 600;
+    font-family: "Arimo", sans-serif;
+}
+
+#addbook input,
+#addbook textarea {
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+    border-style: solid;
+    background-color: var(--background-color);
+    resize: none;
+}
+
+#addbook input:focus,
+#addbook textarea:focus {
+    border-color: var(--accent-color);
+    background-color: var(--offwhite-color);
+}
+
+#addbook i {
+    font-size: 3rem;
+}
+
+#addbook button {
+    align-self: center;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-family: "Arimo", sans-serif;
+    font-weight: 600;
+    background-color: var(--accent-color);
+    color: var(--offwhite-color);
+    border: none;
+}
+
+#addbook button:hover {
+    transform: scale(1.05);
+    transition-duration: 100ms;
+}
+
+#addbook button:active {
+    transform: scale(0.9);
+    transition-duration: 100ms;
+}

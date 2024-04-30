@@ -24,7 +24,6 @@ main {
     display: flex;
     flex-direction: column;
     align-items: end;
-    /* background-color: var(--background-color); */
     font-size: 1.5rem;
     font-family: "Arimo", sans-serif;
     margin-top: 2rem;

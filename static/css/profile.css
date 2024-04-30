@@ -1,0 +1,7 @@
+#heading {
+    font-family: "Sarala", sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-align: center;
+}

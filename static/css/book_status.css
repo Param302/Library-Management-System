@@ -47,7 +47,14 @@ main li {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: 1fr;
+}
 
+.trans-details {
+    border-bottom: 2px solid #7eb1f04d;
+}
+
+#purchased {
+    grid-template-columns: repeat(5, 1fr);
 }
 
 .sno {
