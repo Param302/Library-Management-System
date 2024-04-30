@@ -13,13 +13,39 @@
 
 <body>
     <header>
-        <h1>E-Pustakalya</h1>
-        <a href="{{ url_for('index')}}">Home</a>
-        <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
-        <a href="{{ url_for('book_status')}}">Books Status</a>
-        <a href="{{ url_for('all_sections')}}">Sections</a>
-        <a href="{{ url_for('all_users')}}">Users</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
+        <div id="name"><a href="/">
+                <img src="{{url_for('static', filename='assets/circle-logo.png')}}" alt="logo">
+                <h1>E-Pustakalya</h1>
+            </a></div>
+        <form action="/search" id="search-form">
+            <input type="text" name="q" id="query" placeholder="Type any Book or Author" value="{{query}}">
+            <button type="submit" id="search-button"><i class="uil uil-search"></i></button>
+        </form>
+        {% if admin %}
+        <nav>
+            <div>
+                <span id="user"><a href="{{ url_for('profile') }}">
+                    <i class="uil uil-user-circle"></i>
+                    <span>{{ admin.username }}</span>
+                </a></span>
+                <button id="nav-btn">
+                    <span id="nav-line-1"></span>
+                    <span id="nav-line-2"></span>
+                    <span id="nav-line-3"></span>
+                </button>
+            </div>
+            <ul id="nav-menu" class="nav-close">
+                <li><a href="{{ url_for('index')}}">Home</a></li>
+                <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('book_status')}}">Books Status</a></li>
+                <li><a href="{{ url_for('all_sections')}}">Sections</a></li>
+                <li><a href="{{ url_for('all_users')}}">Users</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+        {% else %}
+        <button id="login-btn"><a href="{{ url_for('login') }}">Login</a></button>
+        {% endif %}
     </header>
     <main>
         <h1>Users</h1>

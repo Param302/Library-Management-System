@@ -131,7 +131,7 @@ def user_routes(app, db, bcrypt):
     def dashboard():
         books = get_user_books(current_user.user_id)
 
-        books_status = {"issued": [], "bought": [], "returned": [], "pending": []}
+        books_status = {"overdue": [], "issued": [], "bought": [], "returned": [], "pending": []}
         for b in books:
             books_status[b["status"]].append(b)
 
@@ -259,7 +259,7 @@ def librarian_routes(app, db, bcrypt):
 
             code = req.status_code
         sections = get_sections()
-        return render_template("all_sections.html", sections=sections, code=code)
+        return render_template("all_sections.html", admin=current_user, sections=sections, code=code)
 
     @app.route('/section/<int:section_id>', methods=['GET', 'POST'])
     @login_required
@@ -304,7 +304,7 @@ def librarian_routes(app, db, bcrypt):
 
         req = requests.get(f"{API_URL}/section/{section_id}")
 
-        return render_template("section.html", section=section, books=req.json(), file_code=file_code)
+        return render_template("section.html", section=section, books=req.json(), file_code=file_code, admin=current_user)
 
     @app.route('/book_status', methods=['GET', 'POST'])
     @login_required
@@ -318,6 +318,8 @@ def librarian_routes(app, db, bcrypt):
             transaction = Transaction.query.filter_by(tid=trans_id).first()
             if status == "issued":
                 transaction.issued_at = datetime.now()
+            else:
+                transaction.returned_at = datetime.now()
             transaction.status = status
             db.session.commit()
 

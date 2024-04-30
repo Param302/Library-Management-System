@@ -1,0 +1,94 @@
+main li {
+    list-style-type: none;
+    font-family: "Arimo", sans-serif;
+}
+
+#heading {
+    font-family: "Sarala", sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+.trans-container {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 0;
+    margin: 2rem 6rem;
+    font-family: "Baloo", sans-serif !important;
+    /* border-bottom: 2px solid black; */
+    /* background-color: var(--offwhite-color); */
+}
+
+.status {
+    font-family: "Arimo", sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.trans-headings {
+    font-size: 1.2rem;
+    font-weight: 600;
+    background-color: var(--accent-color);
+    color: var(--background-color);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.transactions {
+    background-color: var(--offwhite-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.trans-headings, .trans-details {
+    padding: 1rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: 1fr;
+
+}
+
+.sno {
+    max-width: fit-content;
+    align-self: left;
+}
+
+.username {
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.username:hover {
+    text-decoration: underline;
+}
+
+main button {
+    font-family: "Arimo", sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--background-color);
+    background-color: var(--primary-color);
+    border: none;
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+main button:active {
+    transform: scale(0.9);
+    transition-duration: 300ms;
+}
+
+button.issue-btn {
+    background-color: var(--success-color);
+}
+
+button.revoke-btn {
+    background-color: var(--error-color);
+}
+

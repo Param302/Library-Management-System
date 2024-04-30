@@ -131,9 +131,16 @@ def get_transactional_details():
         book["username"] = user.username
         book["name"] = user.name
         book["trans_id"] = t.tid
-        book["issued_at"] = t.issued_at
+        book["issued_at"] = t.issued_at.strftime("%d %b'%y")
         book["tenure"] = t.tenure
         book["status"] = t.status
+        if t.status == "overdue":
+            book["overdue"] = (t.issued_at + timedelta(days=t.tenure)).strftime("%d %b'%y")
+        elif t.status == "returned":
+            if t.returned_at is not None:
+                book["returned_at"] = t.returned_at.strftime("%d %b'%y")
+            else:
+                book["returned_at"] = (t.issued_at + timedelta(days=6)).strftime("%d %b'%y")
         details.append(book)
     
     transactions = {"pending": [], "issued": [], "returned": [], "overdue": [], "bought": []}

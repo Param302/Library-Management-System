@@ -17,20 +17,33 @@
                 <img src="{{url_for('static', filename='assets/circle-logo.png')}}" alt="logo">
                 <h1>E-Pustakalya</h1>
             </a></div>
-        {% if user %}
-        <a href="{{ url_for('index')}}">Home</a>
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('profile') }}">Profile</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-        {% else %}
-        <h1>Welcome, Guest</h1>
-        <a href="{{ url_for('login') }}">Sign in</a>
-        <a href="{{ url_for('register') }}">Sign Up</a>
-        {% endif %}
-        <form action="/search">
+        <form action="/search" id="search-form">
             <input type="text" name="q" id="query" placeholder="Type any Book or Author" value="{{query}}">
-            <button type="submit">Search</button>
+            <button type="submit" id="search-button"><i class="uil uil-search"></i></button>
         </form>
+        {% if user %}
+        <nav>
+            <div>
+                <span id="user"><a href="{{ url_for('profile') }}">
+                        <i class="uil uil-user-circle"></i>
+                        <span>{{ user.username }}</span>
+                    </a></span>
+                <button id="nav-btn">
+                    <span id="nav-line-1"></span>
+                    <span id="nav-line-2"></span>
+                    <span id="nav-line-3"></span>
+                </button>
+            </div>
+            <ul id="nav-menu" class="nav-close">
+                <li><a href="{{ url_for('index')}}">Home</a></li>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+        {% else %}
+        <button id="login-btn"><a href="{{ url_for('login') }}">Login</a></button>
+        {% endif %}
     </header>
     <main>
         <h2>{{user.username}}'s Profile</h2>

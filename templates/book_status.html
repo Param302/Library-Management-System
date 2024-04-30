@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="{{url_for('static', filename='js/index.js')}}" defer></script>
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/book_status.css')}}">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
     <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='assets/logo.ico')}}">
     <title>Book Status | E-Pustakalya</title>
@@ -13,51 +14,120 @@
 
 <body>
     <header>
-        <h1>E-Pustakalya</h1>
-        <a href="{{ url_for('index')}}">Home</a>
-        <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
-        <a href="{{ url_for('book_status')}}">Books Status</a>
-        <a href="{{ url_for('all_sections')}}">Sections</a>
-        <a href="{{ url_for('all_users')}}">Users</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
+        <div id="name"><a href="/">
+                <img src="{{url_for('static', filename='assets/circle-logo.png')}}" alt="logo">
+                <h1>E-Pustakalya</h1>
+            </a></div>
+        <form action="/search" id="search-form">
+            <input type="text" name="q" id="query" placeholder="Type any Book or Author" value="{{query}}">
+            <button type="submit" id="search-button"><i class="uil uil-search"></i></button>
+        </form>
+        {% if admin %}
+        <nav>
+            <div>
+                <span id="user"><a href="{{ url_for('profile') }}">
+                        <i class="uil uil-user-circle"></i>
+                        <span>{{ admin.username }}</span>
+                    </a></span>
+                <button id="nav-btn">
+                    <span id="nav-line-1"></span>
+                    <span id="nav-line-2"></span>
+                    <span id="nav-line-3"></span>
+                </button>
+            </div>
+            <ul id="nav-menu" class="nav-close">
+                <li><a href="{{ url_for('index')}}">Home</a></li>
+                <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('book_status')}}">Books Status</a></li>
+                <li><a href="{{ url_for('all_sections')}}">Sections</a></li>
+                <li><a href="{{ url_for('all_users')}}">Users</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+        {% else %}
+        <button id="login-btn"><a href="{{ url_for('login') }}">Login</a></button>
+        {% endif %}
     </header>
     <main>
-        <h1>Book Status</h1>
+        <h1 id="heading">Book Status</h1>
         {% for status in transactions %}
-        <h2>{{status}}</h2>
         {% set trans = transactions[status] %}
-        <ul>
-            {% for t in trans %}
-            <li>
-                <dl>
-                    <dt>User</dt>
-                    <dd><a href="/u/@{{t.username}}">{{t.name}}</a></dd>
-                    <dt>Book Title</dt>
-                    <dd>{{t.title}}</dd>
-                    <dt>Section</dt>
-                    <dd>{{t.section}}</dd>
-                    <dt>Status</dt>
-                    <dd>
-                        {% if t.status == "pending" %}
-                        <form action="/book_status" method="POST">
-                            <input type="hidden" name="trans_id" id="trans_id" value="{{t.trans_id}}">
-                            <input type="hidden" name="status" id="status" value="issued">
-                            <button type="submit">Issue</button>
-                        </form>
-                        {% elif t.status == "issued" or t.status == "overdue" %}
-                        <form action="/book_status" method="POST">
-                            <input type="hidden" name="trans_id" id="trans_id" value="{{t.trans_id}}">
-                            <input type="hidden" name="status" id="status" value="returned">
-                            <button type="submit">Revoke Access</button>
-                        </form>
-                        {% else %}
-                        Returned! {{t.status}}
-                        {% endif %}
-                    </dd>
-                </dl>
-            </li>
-            {% endfor %}
+        {% if trans %}
+        <ul class="trans-container">
+            <h2 class="status">
+                {% if status == "pending" %}
+                Pending Requests
+                {% elif status == "issued" %}
+                Issued Books
+                {% elif status == "overdue" %}
+                Overdue Books
+                {% elif status == "bought" %}
+                Purchased Books
+                {% elif status == "returned" %}
+                Returned Books
+                {% endif %}
+            </h2>
+            <ul class="trans-headings">
+                <li class="sno">S.No.</li>
+                <li>Username</li>
+                <li>Title</li>
+                <li>Section</li>
+                <li>
+                    {% if status == "pending" %}
+                    Requested on
+                    {% elif status == "issued" or status == "returned" %}
+                    Issued on
+                    {% elif status == "overdue" %}
+                    Overdue since
+                    {% elif status == "bought" %}
+                    Purchased on
+                    {% endif %}
+                </li>
+                {% if status == "returned" %}
+                <li>Returned on</li>
+                {% else %}
+                <li>Actions</li>
+                {% endif %}
+            </ul>
+            <ul class="transactions">
+                {% for t in trans %}
+                <li>
+                    <ul class="trans-details">
+                        <li class="sno"> {{loop.index}}</li>
+                        <li class="username"><a href="/u/@{{t.username}}">{{t.username}}</a></li>
+                        <li>{{t.title}}</li>
+                        <li>{{t.section}}</li>
+                        <li>
+                            {% if status == "overdue" %}
+                            {{t.overdue}}
+                            {% elif status == "returned" %}
+                            {{t.issued_at}}</li>
+                            <li>{{t.returned_at}}
+                            {% else %}
+                            {{t.issued_at}}
+                            {% endif %}
+                        </li>
+                        <li>
+                            {% if t.status == "pending" %}
+                            <form action="/book_status" method="POST">
+                                <input type="hidden" name="trans_id" id="trans_id" value="{{t.trans_id}}">
+                                <input type="hidden" name="status" value="issued">
+                                <button type="submit" class="issue-btn" >Issue</button>
+                            </form>
+                            {% elif t.status == "issued" or t.status == "overdue" %}
+                            <form action="/book_status" method="POST">
+                                <input type="hidden" name="trans_id" id="trans_id" value="{{t.trans_id}}">
+                                <input type="hidden" name="status" value="returned">
+                                <button type="submit" class="revoke-btn">Revoke</button>
+                            </form>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
         </ul>
+        {% endif %}
         {% endfor %}
     </main>
 </body>
