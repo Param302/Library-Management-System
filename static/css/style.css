@@ -4,7 +4,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Sarala", sans-serif;
+    font-family: "Baloo", sans-serif;
     transition: all 0.3s ease-out;
 }
 
@@ -19,6 +19,10 @@
     --error-color: #f44336; /* Modern red */
     --text-color: #333333; /* Greyish black */
     --offwhite-color: #f9f9f9; /* Off-white */
+}
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Sarala", sans-serif;
+    font-weight: 800;
 }
 a {
     all:unset;
@@ -120,6 +124,7 @@ header {
 
 nav div {
     display: flex;
+    align-items: center;
     gap: 50px;
 }
 
@@ -150,11 +155,11 @@ nav div {
     right: 0;
     bottom: 0;
     width: 17vw;
-    height: calc(100vh - 7.3rem);
-    /* display: none; */
+    height: calc(100vh - 7.1rem);
     flex-direction: column;
     align-items: center;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
+    font-weight: 400;
 }
 
 #nav-menu li {
@@ -164,7 +169,12 @@ nav div {
     border-bottom-color: black;
     width: 100%;
     text-align: center;
-    padding: 2rem 0;
+    padding: 3rem 0;
+}
+
+#nav-menu li a {
+    display: inline-block;
+    width: 100%;
 }
 
 #nav-menu li:hover {

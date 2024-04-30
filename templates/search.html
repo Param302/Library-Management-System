@@ -16,7 +16,7 @@
             <h1>E-Pustakalya</h1>
         </a></div>
         <form action="/search" id="search-form">
-            <input type="text" name="q" id="query" placeholder="Type any Book or Author" value="{{query}}">
+            <input type="text" name="q" id="query" placeholder="Type any Book or Author" value="{{query|title}}">
             <button type="submit" id="search-button">🔍</button>
         </form>
         {% if user %}

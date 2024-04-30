@@ -28,6 +28,10 @@
                 <h3>{{book["title"]}}</h3>
                 <p>Author: {{book["author"]}}</p>
                 <p>Section: {{book["section"]}}</p>
+                {% set thumbnail = book.filename ~ ".jpg"%}
+                <figure>
+                    <img src="{{ url_for('static', filename='thumbnails/' ~ thumbnail) }}" alt="">
+                </figure>
                 <p>Filetype: {{book["filetype"]}}</p>
                 {% endif %}
                 <button><a href="/book/{{book['book_id']}}">View book</a></button>

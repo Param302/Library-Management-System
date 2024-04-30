@@ -13,9 +13,9 @@
 <body>
     <header>
         <div id="name"><a href="/">
-            <img src="{{url_for('static', filename='assets/circle-logo.png')}}" alt="logo">
-            <h1>E-Pustakalya</h1>
-        </a></div>
+                <img src="{{url_for('static', filename='assets/circle-logo.png')}}" alt="logo">
+                <h1>E-Pustakalya</h1>
+            </a></div>
         <form action="/search" id="search-form">
             <input type="text" name="q" id="query" placeholder="Type any Book or Author" value="{{query}}">
             <button type="submit" id="search-button">🔍</button>
@@ -33,7 +33,7 @@
                     <span id="nav-line-3"></span>
                 </button>
             </div>
-            <ul id="nav-menu" class="nav-close"> <!-- This will be a dropdown on left under user icon -->
+            <ul id="nav-menu" class="nav-close">
                 <li><a href="{{ url_for('index')}}">Home</a></li>
 
                 {% if user.role == "admin" %}
@@ -53,14 +53,29 @@
         {% endif %}
     </header>
     <main>
-        <h2>Books:</h2>
+        <div class="sections">
+            <h2>Sections</h2>
+            <ul>
+                {% for section in sections %}
+                <li><a href="/search?q={{section.name}}">{{section.name}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
         <ul>
             {% for book_id in books %}
             {% set book = books[book_id] %}
-            <li>
+            <li class="books">
                 <h3>{{book["title"]}}</h3>
                 <p>Author: {{book["author"]}}</p>
                 <p>Section: {{book["section"]}}</p>
+                {% if book.filetype == "pdf" %}
+                    {% set thumbnail = book.filename ~ ".jpg"%}
+                {% else %}
+                    {% set thumbnail = "epub.jpg"%}
+                {% endif %}
+                <figure>
+                    <img src="{{ url_for('static', filename='thumbnails/' ~ thumbnail) }}" alt="">
+                </figure>
                 <p>Filetype: {{book["filetype"]}}</p>
                 <button><a href="/book/{{book_id}}">View Book</a></button>
             </li>

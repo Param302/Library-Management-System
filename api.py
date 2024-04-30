@@ -1,6 +1,6 @@
 import os
 from models import Book, Section
-from utils import get_book_details, get_books_by_section, UPLOAD_FOLDER
+from utils import get_book_details, get_books_by_section, UPLOAD_FOLDER, remove_book_thumbnail
 
 from app import db
 from flask_restful import Resource, reqparse, fields, marshal_with
@@ -104,7 +104,14 @@ class BookAPI(Resource):
         book = Book.query.get(book_id)
         if not book:
             return {"message": "Book not found"}, 404
-        os.remove(os.path.join(UPLOAD_FOLDER, book.filename))
+        books = Book.query.filter_by(filename=book.filename and book_id!=book_id).all()
+        for i in books:
+            Book.query.delete(i)
+        filepath = os.path.join(UPLOAD_FOLDER, book.filename)
+
+        os.remove(filepath)
+        if book.filetype == "pdf":
+            remove_book_thumbnail(filepath)
         db.session.delete(book)
         db.session.commit()
         return 200

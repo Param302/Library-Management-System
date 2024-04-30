@@ -1,9 +1,14 @@
 from datetime import datetime, timedelta
+import os
 import random
 import re
 from string import ascii_letters, digits, punctuation
+
+from flask import url_for
 from app import ALLOWED_EXTENSIONS, UPLOAD_FOLDER
 from models import Purchase, User, Section, Book, Transaction, Feedback
+from pdf2image import convert_from_path
+from PIL import Image
 
 def is_valid_password(password, username):
     return (
@@ -42,6 +47,7 @@ def get_book_details(book_id):
         "title": book.title,
         "author": book.author,
         "section": Section.query.filter_by(section_id=book.section_id).first().name,
+        "filename": book.filename,
         "filetype": book.filetype,
     }
 
@@ -181,3 +187,23 @@ def store_review(review, rating, trans_id, db):
     feedback = Feedback(transaction_id=trans_id, review=review, rating=rating)
     db.session.add(feedback)
     db.session.commit()
+
+def process_path(file_path):
+    folder, name = file_path.rsplit("/", 1)
+    name = name.rsplit(".", 1)[0]
+    img_folder = os.path.join(os.getcwd(), "static", "thumbnails/")
+    os.makedirs(img_folder, exist_ok=True)
+    return folder, name, img_folder
+
+def remove_book_thumbnail(filepath):
+    _, name, img_folder = process_path(filepath)
+    os.remove(img_folder + name + ".jpg")
+
+def pdf_to_image(pdf_path):
+    folder, name, img_folder = process_path(pdf_path)
+    pages = convert_from_path(pdf_path, first_page=1, last_page=1)
+    first_page = pages[0]
+    first_page.save(img_folder + name + ".jpg", "JPEG")
+
+def epub_to_image(epub_path):
+    ...

@@ -12,9 +12,9 @@
 <body>
     <header>
         <div id="name"><a href="/">
-            <img src="{{url_for('static', filename='assets/circle-logo.png')}}" alt="logo">
-            <h1>E-Pustakalya</h1>
-        </a></div>
+                <img src="{{url_for('static', filename='assets/circle-logo.png')}}" alt="logo">
+                <h1>E-Pustakalya</h1>
+            </a></div>
         {% if user %}
         <a href="{{ url_for('index')}}">Home</a>
         <a href="{{ url_for('dashboard') }}">Dashboard</a>
@@ -41,6 +41,10 @@
                 <h3>{{book["title"]}}</h3>
                 <p>Author: {{book["author"]}}</p>
                 <p>Section: {{book["section"]}}</p>
+                {% set thumbnail = book.filename ~ ".jpg"%}
+                <figure>
+                    <img src="{{ url_for('static', filename='thumbnails/' ~ thumbnail) }}" alt="">
+                </figure>
                 <p>Filetype: {{book["filetype"]}}</p>
                 <p>Issued on: {{book["issued_at"]}}</p>
                 {% if book["status"] in ("issued", "overdue") %}

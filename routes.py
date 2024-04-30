@@ -2,7 +2,7 @@ import os
 import requests
 from functools import wraps
 from datetime import datetime
-from utils import allowed_file, finish_transaction, generate_string, get_book_details, get_book_details_for_user, get_book_download_code, get_transactional_details, is_valid_password, get_sections, get_user_books, get_users, get_books_data, store_review
+from utils import allowed_file, finish_transaction, generate_string, get_book_details, get_book_details_for_user, get_book_download_code, get_books, get_transactional_details, is_valid_password, get_sections, get_user_books, get_users, get_books_data, pdf_to_image, remove_book_thumbnail, store_review
 from models import User, Section, Book, Transaction, Purchase
 
 from werkzeug.utils import secure_filename
@@ -16,10 +16,10 @@ def user_routes(app, db, bcrypt):
     @app.route('/')
     def index():
         books_data = get_books_data()
-
+        sections = get_sections()
         if current_user.is_authenticated:
-            return render_template("index.html", books=books_data, user=current_user)
-        return render_template("index.html", books=books_data)
+            return render_template("index.html", books=books_data, user=current_user, sections=sections)
+        return render_template("index.html", books=books_data, sections=sections)
     
     @app.route('/search')
     def search():
@@ -285,13 +285,17 @@ def librarian_routes(app, db, bcrypt):
                         req = requests.post(
                             f"{API_URL}/book/upload", json=data, headers={'Content-Type': 'application/json'})
                         file_code = req.status_code
-                        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                        file.save(filepath)
+                        if filetype == "pdf":
+                            pdf_to_image(filepath)
+                
                 else:
                     file_code = -1      # Invalid file type
             else:       # Deleting a book
                 req = requests.delete(f"{API_URL}/book/{request.form.get('book_id')}", json=request.form.to_dict(
                 ), headers={'Content-Type': 'application/json'})
                 file_code = req.status_code
+
 
         req = requests.get(f"{API_URL}/section/{section_id}")
 
