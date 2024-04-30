@@ -133,7 +133,7 @@ def user_routes(app, db, bcrypt):
             if b["status"] in books_status:
                 books_status[b["status"]].append(b)
         
-        return render_template("user_profile.html", user=user, books_status=books_status)
+        return render_template("user_profile.html", user=user, books_status=books_status, current_user=current_user)
 
     @app.route('/dashboard')
     @login_required

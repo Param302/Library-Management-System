@@ -22,12 +22,12 @@
             <input type="text" name="q" id="query" placeholder="Type any Book or Author" value="{{query}}">
             <button type="submit" id="search-button"><i class="uil uil-search"></i></button>
         </form>
-        {% if user %}
+        {% if current_user.is_authenticated %}
         <nav>
             <div>
                 <span id="user"><a href="{{ url_for('profile') }}">
                         <i class="uil uil-user-circle"></i>
-                        <span>{{ user.username }}</span>
+                        <span>{{ current_user.username }}</span>
                     </a></span>
                 <button id="nav-btn">
                     <span id="nav-line-1"></span>
